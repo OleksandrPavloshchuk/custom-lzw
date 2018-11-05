@@ -4,20 +4,30 @@ const size = 64
 
 type bits uint64
 
-// BitSet is a set of bits that can be set, cleared and queried.
-type BitSet []bits
-
-// Set ensures that the given bit is set in the BitSet.
-func (this *BitSet) Set(i uint) {
-    if len(*this) < int(i/size+1) {
-        r := make([]bits, i/size+1)
-        copy(r, *this)
-        *this = r
-    }
-    (*this)[i/size] |= 1 << (i % size)
+type BitSet struct {
+    words []bits
+    maxUsedIndex uint
 }
 
-// IsSet returns true if the given bit is set, false if it is cleared.
+func (this *BitSet) Set(i uint) {
+    if this.maxUsedIndex < i {
+        this.maxUsedIndex = i
+    }
+    if len(this.words) < int(i/size+1) {
+        r := BitSet{make([]bits, i/size+1), this.maxUsedIndex}
+        copy(r.words, this.words)
+        *this = r
+    }
+    this.words[i/size] |= 1 << (i % size)
+}
+
 func (this *BitSet) IsSet(i uint) bool {
-    return (*this)[i/size]&(1<<(i%size)) != 0
+    if i>this.maxUsedIndex {
+        return false
+    }
+    return this.words[i/size]&(1<<(i%size)) != 0
+}
+
+func (this *BitSet) Length() uint {
+	return this.maxUsedIndex
 }
