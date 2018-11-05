@@ -33,7 +33,7 @@ func encode(inputFileName string, outputFileName string) error {
         return err
     }
     codeWriter:=CodeWriter{}
-    Encode( src, codeWriter )    
+    Encode( src, &codeWriter )    
     return codeWriter.Write(outputFileName)
 }
 

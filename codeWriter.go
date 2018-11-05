@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"fmt"
 )
 
 type CodeWriter struct {
@@ -24,8 +23,6 @@ func (this *CodeWriter) Accept(code uint, length uint) {
 func (this *CodeWriter) Write(fileName string) error {
     size:=(this.start + 7) / 8     
     result:=make([]byte, 0)
-    
-    fmt.Printf("TRACE: codeWriter.bitSet=%v\n", this.bitSet)
 	for i:=0; uint(i)<size; i++ {
 	    result=append(result,this.toByte(uint(i << 3)))
 	}	
