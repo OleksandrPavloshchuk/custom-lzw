@@ -2,11 +2,12 @@ package main
 
 import (
 	"io/ioutil"
+	"fmt"
 )
 
 type CodeWriter struct {
 	start uint
-        bitSet BitSet	
+    bitSet BitSet	
 }
 
 func (this *CodeWriter) Accept(code uint, length uint) {
@@ -21,10 +22,13 @@ func (this *CodeWriter) Accept(code uint, length uint) {
 }
 
 func (this *CodeWriter) Write(fileName string) error {
-	result := make([]byte, (this.start + 7) / 8)
-	for i:=0; i<len(result); i++ {
-		result[i] = this.toByte(uint(i << 3))
-	}
+    size:=(this.start + 7) / 8     
+    result:=make([]byte, 0)
+    
+    fmt.Printf("TRACE: codeWriter.bitSet=%v\n", this.bitSet)
+	for i:=0; uint(i)<size; i++ {
+	    result=append(result,this.toByte(uint(i << 3)))
+	}	
 	return ioutil.WriteFile(fileName, result, 0644)
 }
 

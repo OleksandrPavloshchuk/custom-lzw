@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 const size = 64
 
 type bits uint64
@@ -13,10 +15,14 @@ func (this *BitSet) Set(i uint) {
     if this.maxUsedIndex < i {
         this.maxUsedIndex = i
     }
-    if len(this.words) < int(i/size+1) {
-        r := BitSet{make([]bits, i/size+1), this.maxUsedIndex}
-        copy(r.words, this.words)
-        *this = r
+    newSize:=int(i/size+1)
+    fmt.Printf("%v: newSize=%v\n", i, newSize)    
+    
+    if len(this.words) < newSize {
+        n:=make([]bits, newSize)
+        copy(n,this.words)
+        this.words = n
+        fmt.Printf("n=%v\n", n)
     }
     this.words[i/size] |= 1 << (i % size)
 }

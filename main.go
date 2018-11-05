@@ -2,46 +2,58 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"io/ioutil"
+	"strings"
+	"errors"
 )
 
-func writeTestData(data []uint, codeSize uint, fileName string) error {
-	codeWriter := CodeWriter{}
-	for _, i := range data {
-		codeWriter.Accept(i, codeSize)
+func call(f func(string,string) error, inputFileName string, outputFileName string) {
+	if inputFileName==outputFileName {
+		fmt.Printf("input and output files should not coincide\n")
+		os.Exit(1)
+	} else {
+		err:=f(inputFileName, outputFileName)
+		if err!=nil {
+			fmt.Printf("ERROR: %v\n", err)
+			os.Exit(2)
+		} else {
+			os.Exit(0)
+		}
 	}
-	return codeWriter.Write(fileName)
 }
 
-func readTestData(codeSize uint, fileName string) ([]uint, error) {
-	codeReader := CodeReader{}
-	err := codeReader.Read(fileName)
-	if err!=nil {
-	    return nil, err
-	}
-	r := make([]uint, 0)
-	for codeReader.HasCodes() {
-	    r = append(r, codeReader.Get(codeSize))
-	}
-	
-	return r, nil
+func printUsageMessage() {
+	fmt.Printf("Usage: HomeMadeArchiver [-a|-e] <input file> <output file>\n")
 }
 
+func encode(inputFileName string, outputFileName string) error {
+    src,err:=ioutil.ReadFile(inputFileName)
+    if err!=nil {
+        return err
+    }
+    codeWriter:=CodeWriter{}
+    Encode( src, codeWriter )    
+    return codeWriter.Write(outputFileName)
+}
+
+func decode(inputFileName string, outputFileName string) error {
+    return errors.New("TODO decode")
+}
 
 
 func main() {
-	const codeSize = 9
-	srcData := []uint {1, 1, 1, 1}
-	const fileName = "/home/pavloshchuk-ov/temp/test1/1.A"
-
-	err := writeTestData(srcData, codeSize, fileName)
-	if err!=nil {
-		panic(err)
+	if len(os.Args)<4 {
+		printUsageMessage()
+		os.Exit(1)
+	} else {
+		switch strings.ToUpper(os.Args[1]) {
+			case "-A":
+				call( encode, os.Args[2], os.Args[3])
+			case "-E":
+				call( decode, os.Args[2], os.Args[3])
+			default:
+				printUsageMessage()
+		}
 	}
-	
-	resData,err := readTestData(codeSize, fileName)
-	if err!=nil {
-	    panic(err)
-	}
-	
-    fmt.Printf("SRC=%v\nRES=%v\n", srcData, resData)	
 }
