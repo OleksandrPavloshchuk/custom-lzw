@@ -5,7 +5,6 @@ import (
 	"os"
 	"io/ioutil"
 	"strings"
-	"errors"
 )
 
 func call(f func(string,string) error, inputFileName string, outputFileName string) {
@@ -24,7 +23,7 @@ func call(f func(string,string) error, inputFileName string, outputFileName stri
 }
 
 func printUsageMessage() {
-	fmt.Printf("Usage: HomeMadeArchiver [-a|-e] <input file> <output file>\n")
+	fmt.Printf("Usage: custom-lzw [-a|-e] <input file> <output file>\n")
 }
 
 func encode(inputFileName string, outputFileName string) error {
@@ -38,9 +37,14 @@ func encode(inputFileName string, outputFileName string) error {
 }
 
 func decode(inputFileName string, outputFileName string) error {
-    return errors.New("TODO decode")
+    codeReader:=CodeReader{}
+    err:=codeReader.Read(inputFileName)
+    if err!=nil {
+        return err
+    }
+    result:=Decode(&codeReader)
+    return ioutil.WriteFile(outputFileName, result, 0644)
 }
-
 
 func main() {
 	if len(os.Args)<4 {

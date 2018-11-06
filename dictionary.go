@@ -20,7 +20,7 @@ func (this *Dictionary) GetCodeSize() uint {
     return this.codeSize
 }
 
-func (this *Dictionary) Put(s []byte) {
+func (this *Dictionary) Put(s []byte) {    
     this.data = append( this.data, s)
 }
 
@@ -55,7 +55,7 @@ func (this *Dictionary) HasString(a []byte) bool {
 }
 
 func (this *Dictionary) HasCode(i uint) bool {
-    return i==0 || i>uint(len(this.data))
+    return i!=0 && i<=uint(len(this.data))
 }
 
 func (this *Dictionary) incrementCodeSizeWhenCondition(condition bool) bool {
