@@ -4,10 +4,12 @@ const IncrementCodeSize = 0
 
 type Dictionary struct {
     data [][]byte
+    index map[string]uint
     codeSize uint
 }
 
 func (this *Dictionary) Init() {
+    this.index = make(map[string]uint)
     this.codeSize = 9
     for b:=0; b<256; b++ {
         var a [1]byte
@@ -20,8 +22,9 @@ func (this *Dictionary) GetCodeSize() uint {
     return this.codeSize
 }
 
-func (this *Dictionary) Put(s []byte) {    
+func (this *Dictionary) Put(s []byte) { 
     this.data = append( this.data, s)
+    this.index[string(s)]=uint(len(this.data))
 }
 
 func (this *Dictionary) GetString(i uint) []byte {
@@ -29,12 +32,7 @@ func (this *Dictionary) GetString(i uint) []byte {
 }
 
 func (this *Dictionary) GetIndex(a []byte) uint {
-    for i,s := range this.data {
-        if areEqual(s, a) {
-            return uint(i+1)
-        }
-    }
-    return 0
+    return this.index[string(a)]
 }
 
 func (this *Dictionary) IncrementCodeSizeWhileDecode(code uint) bool {
@@ -46,12 +44,8 @@ func (this *Dictionary) IncrementCodeSizeWhileEncode() bool {
 }
 
 func (this *Dictionary) HasString(a []byte) bool {
-    for _,s := range this.data {
-        if areEqual(s,a) {
-            return true
-        }
-    }
-    return false
+    _,r:=this.index[string(a)]
+    return r
 }
 
 func (this *Dictionary) HasCode(i uint) bool {
@@ -64,17 +58,5 @@ func (this *Dictionary) incrementCodeSizeWhenCondition(condition bool) bool {
         return true;
     }
     return false
-}
-
-func areEqual(a1 []byte, a2 []byte) bool {
-    if len(a1)!=len(a2) {
-        return false
-    }
-    for i,b:=range a1 {
-        if b != a2[i] {
-            return false
-        }
-    }
-    return true
 }
 

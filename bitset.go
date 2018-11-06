@@ -16,7 +16,7 @@ func (this *BitSet) Set(i uint) {
     newSize:=int(i/size+1)
     
     if len(this.words) < newSize {
-        n:=make([]bits, newSize)
+        n:=make([]bits, newSize+2)
         copy(n,this.words)
         this.words = n
     }
@@ -24,9 +24,6 @@ func (this *BitSet) Set(i uint) {
 }
 
 func (this *BitSet) IsSet(i uint) bool {
-    if i>this.maxUsedIndex {
-        return false
-    }
     return this.words[i/size]&(1<<(i%size)) != 0
 }
 
