@@ -2,57 +2,57 @@ package lzw
 
 const IncrementCodeSize = 0
 
-type Dictionary struct {
+type dictionary struct {
 	data     [][]byte
 	index    map[string]uint
 	codeSize uint
 }
 
-func (this *Dictionary) Init() {
+func (this *dictionary) init() {
 	this.index = make(map[string]uint)
 	this.codeSize = 9
 	for b := 0; b < 256; b++ {
 		var a [1]byte
 		a[0] = byte(b)
-		this.Put(a[:])
+		this.put(a[:])
 	}
 }
 
-func (this *Dictionary) GetCodeSize() uint {
+func (this *dictionary) getCodeSize() uint {
 	return this.codeSize
 }
 
-func (this *Dictionary) Put(s []byte) {
+func (this *dictionary) put(s []byte) {
 	this.data = append(this.data, s)
 	this.index[string(s)] = uint(len(this.data))
 }
 
-func (this *Dictionary) GetString(i uint) []byte {
+func (this *dictionary) getString(i uint) []byte {
 	return this.data[i-1]
 }
 
-func (this *Dictionary) GetIndex(a []byte) uint {
+func (this *dictionary) getIndex(a []byte) uint {
 	return this.index[string(a)]
 }
 
-func (this *Dictionary) IncrementCodeSizeWhileDecode(code uint) bool {
+func (this *dictionary) incrementCodeSizeWhileDecode(code uint) bool {
 	return this.incrementCodeSizeWhenCondition(code == IncrementCodeSize)
 }
 
-func (this *Dictionary) IncrementCodeSizeWhileEncode() bool {
+func (this *dictionary) incrementCodeSizeWhileEncode() bool {
 	return this.incrementCodeSizeWhenCondition(uint(len(this.data))+1 > (1 << this.codeSize))
 }
 
-func (this *Dictionary) HasString(a []byte) bool {
+func (this *dictionary) hasString(a []byte) bool {
 	_, r := this.index[string(a)]
 	return r
 }
 
-func (this *Dictionary) HasCode(i uint) bool {
+func (this *dictionary) hasCode(i uint) bool {
 	return i != 0 && i <= uint(len(this.data))
 }
 
-func (this *Dictionary) incrementCodeSizeWhenCondition(condition bool) bool {
+func (this *dictionary) incrementCodeSizeWhenCondition(condition bool) bool {
 	if condition {
 		this.codeSize++
 		return true

@@ -6,8 +6,8 @@ import (
 )
 
 const major = byte(0)
-const major = byte(0)
-const major = byte(4)
+const minor = byte(0)
+const patch = byte(4)
 const date = "2018-11-07"
 
 func ForHeader() []byte {
@@ -31,9 +31,9 @@ func isMajorCorrect(v byte) bool {
 }
 
 func isMinorCorrect(v byte) bool {
-    return v==major
+    return v==minor
 }
 
 func isPatchCorrect(v byte) bool {
-    return v==major
+    return v==patch
 }

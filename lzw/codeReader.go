@@ -1,18 +1,18 @@
 package lzw
 
-type CodeReader struct {
-	CodeIO
+type codeReader struct {
+	codeIO
 }
 
-func (this *CodeReader) HasCodes() bool {
+func (this *codeReader) hasCodes() bool {
 	return this.start <= this.bitSet.Length()
 }
 
-func (this *CodeReader) Get(codeLength uint) uint {
+func (this *codeReader) get(codeLength uint) uint {
 	r := uint(0)
 	d := uint(1)
 	for i := uint(0); i < codeLength; i++ {
-		if this.bitSet.IsSet(this.start) {
+		if this.bitSet.isSet(this.start) {
 			r |= d
 		}
 		this.start++
@@ -21,14 +21,14 @@ func (this *CodeReader) Get(codeLength uint) uint {
 	return r
 }
 
-func (this *CodeReader) Set(data []byte) {
+func (this *codeReader) set(data []byte) {
 	counter := uint(0)
 	for n, b := range data {
 		if n >= HeadLen {
 			d := byte(1)
 			for i := 0; i < 8; i++ {
 				if d&b != 0 {
-					this.bitSet.Set(counter)
+					this.bitSet.set(counter)
 				}
 				counter++
 				d <<= 1

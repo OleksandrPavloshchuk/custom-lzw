@@ -1,34 +1,34 @@
 package lzw
 
-func encode(src []byte, codeWriter *CodeWriter) {
-	dict := Dictionary{}
-	dict.Init()
+func encode(src []byte, cw *codeWriter) {
+	dict := dictionary{}
+	dict.init()
 
 	buf := make([]byte, 0)
 	for _, b := range src {
 		test := append(buf, b)
-		if !dict.HasString(test) {
-			emit(buf, dict, codeWriter)
-			dict.Put(test)
-			if dict.IncrementCodeSizeWhileEncode() {
-				codeWriter.Accept(IncrementCodeSize, dict.GetCodeSize()-1)
+		if !dict.hasString(test) {
+			emit(buf, dict, cw)
+			dict.put(test)
+			if dict.incrementCodeSizeWhileEncode() {
+				cw.accept(IncrementCodeSize, dict.getCodeSize()-1)
 			}
 			buf = make([]byte, 0)
 		}
 		buf = append(buf, b)
 	}
-	emit(buf, dict, codeWriter)
+	emit(buf, dict, cw)
 }
 
-func emit(s []byte, dict Dictionary, codeWriter *CodeWriter) {
-	codeWriter.Accept(dict.GetIndex(s), dict.GetCodeSize())
+func emit(s []byte, dict dictionary, cw *codeWriter) {
+	cw.accept(dict.getIndex(s), dict.getCodeSize())
 }
 
 func Encode(src []byte, version []byte) ([]byte, error) {
-	codeWriter := CodeWriter{}
-	encode(src, &codeWriter)
-	res := codeWriter.GetBytes()
-	SetHeader(&res, &src, version)
+	cw := codeWriter{}
+	encode(src, &cw)
+	res := cw.getBytes()
+	setHeader(&res, &src, version)
 	return res, nil
 }
 

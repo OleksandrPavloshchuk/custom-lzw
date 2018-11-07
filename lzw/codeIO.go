@@ -1,6 +1,6 @@
 package lzw
 
-type CodeIO struct {
+type codeIO struct {
 	start  uint
-	bitSet BitSet
+	bitSet bitSet
 }

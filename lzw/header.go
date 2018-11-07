@@ -43,7 +43,7 @@ func (h *Header) CheckUnpackedContent(res *[]byte) error {
 	return nil
 }
 
-func SetHeader(res *[]byte, src *[]byte, version []byte) {
+func setHeader(res *[]byte, src *[]byte, version []byte) {
     h:=Header{res}
 	h.setSignature()
 	h.setVersion(version)

@@ -1,21 +1,21 @@
 package lzw
 
-type CodeWriter struct {
-	CodeIO
+type codeWriter struct {
+	codeIO
 }
 
-func (this *CodeWriter) Accept(code uint, length uint) {
+func (this *codeWriter) accept(code uint, length uint) {
 	d := uint(1)
 	for i := uint(0); i < length; i++ {
 		if code&d != 0 {
-			this.bitSet.Set(this.start)
+			this.bitSet.set(this.start)
 		}
 		this.start++
 		d <<= 1
 	}
 }
 
-func (this *CodeWriter) GetBytes() []byte {
+func (this *codeWriter) getBytes() []byte {
 	size := (this.start + 7) / 8
 	result := make([]byte, HeadLen)
 	for i := 0; uint(i) < size; i++ {
@@ -24,11 +24,11 @@ func (this *CodeWriter) GetBytes() []byte {
 	return result
 }
 
-func (this *CodeWriter) toByte(offset uint) byte {
+func (this *codeWriter) toByte(offset uint) byte {
 	r := byte(0)
 	d := byte(1)
 	for i := 0; i < 8; i++ {
-		if this.bitSet.IsSet(uint(i) + offset) {
+		if this.bitSet.isSet(uint(i) + offset) {
 			r |= d
 		}
 		d <<= 1
