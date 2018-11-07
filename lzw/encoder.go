@@ -1,9 +1,5 @@
 package lzw
 
-import (
-	"io/ioutil"
-)
-
 func encode(src []byte, codeWriter *CodeWriter) {
 	dict := Dictionary{}
 	dict.Init()
@@ -28,16 +24,12 @@ func emit(s []byte, dict Dictionary, codeWriter *CodeWriter) {
 	codeWriter.Accept(dict.GetIndex(s), dict.GetCodeSize())
 }
 
-func Encode(inputFileName string, outputFileName string, version []byte) error {
-	src, err := ioutil.ReadFile(inputFileName)
-	if err != nil {
-		return err
-	}
+func Encode(src []byte, version []byte) ([]byte, error) {
 	codeWriter := CodeWriter{}
 	encode(src, &codeWriter)
 	res := codeWriter.GetBytes()
 	setHeader(&src, &res, version)
-	return ioutil.WriteFile(outputFileName, res, 0644)
+	return res, nil
 }
 
 func setHeader(src *[]byte, res *[]byte, version []byte) {

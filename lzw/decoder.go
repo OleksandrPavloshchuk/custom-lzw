@@ -2,7 +2,6 @@ package lzw
 
 import (
 	"errors"
-	"io/ioutil"
 )
 
 var VersionChecker func(int,*[]byte) bool
@@ -36,26 +35,18 @@ func decode(codeReader *CodeReader) []byte {
 	return result
 }
 
-func Decode(inputFileName string, outputFileName string, version []byte) error {
-	src, err := ioutil.ReadFile(inputFileName)
-	if err != nil {
-		return err
-	}
-	h := Header{&src}
-	
+func Decode(src []byte, version []byte) ([]byte,error) {
+	h := Header{&src}	
 	if err := checkHeader(&h, version); err != nil {
-		return err
+		return nil, err
 	}
 	codeReader := CodeReader{}
 	codeReader.Set(src)
 	res:=decode(&codeReader)
-	if !h.CheckUnpackedSize(uint64(len(res))) {
-	    return errors.New("invalid unpacked content size")
+	if err := checkUnpackedContent(&h, &res); err!=nil {
+	    return nil, err
 	}
-	if !h.CheckUnpackedCRC(&res) {
-	    return errors.New("invalid unpacked content CRC")
-	}	
-	return ioutil.WriteFile(outputFileName, res, 0644)
+	return res, nil
 }
 
 func checkHeader(h *Header, version []byte) error {
@@ -72,5 +63,14 @@ func checkHeader(h *Header, version []byte) error {
 	    return errors.New("invalid packed CRC")
 	}
 	return nil
+}
 
+func checkUnpackedContent(h *Header, res *[]byte) error {
+	if !h.CheckUnpackedSize(uint64(len(*res))) {
+	    return errors.New("invalid unpacked content size")
+	}
+	if !h.CheckUnpackedCRC(res) {
+	    return errors.New("invalid unpacked content CRC")
+	}
+	return nil
 }
