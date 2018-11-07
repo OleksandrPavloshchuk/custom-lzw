@@ -1,11 +1,16 @@
 package lzw
 
-const HeadLen = 30
+import (
+    "crypto/md5"
+)
+
+const HeadLen = 54
 
 var signature = []byte{0xAA, 'r', 0xCC}
 const unpackedSizeOffset = 6
 const packedSizeOffset = 14
-const crcOffset = 22
+const unpackedCrcOffset = 22
+const packedCrcOffset = 38
 
 type Header struct {
     buf *[]byte
@@ -41,6 +46,26 @@ func (this *Header) CheckUnpackedSize(size uint64) bool {
 
 func (this *Header) CheckPackedSize() bool {
     return uint64(len(*this.buf)-HeadLen)==fromBytes((*this.buf)[packedSizeOffset:packedSizeOffset+8])
+}
+
+func (this *Header) SetUnpackedCRC(src *[]byte) {
+    s := md5.Sum(*src)
+    this.setArea( unpackedCrcOffset, s[:])
+}
+
+func (this *Header) CheckUnpackedCRC(src *[]byte) bool {
+    s := md5.Sum(*src)
+    return this.checkArea(unpackedCrcOffset, s[:]);
+}
+
+func (this *Header) SetPackedCRC() {
+    s := md5.Sum((*this.buf)[HeadLen:])
+    this.setArea( packedCrcOffset, s[:])
+}
+
+func (this *Header) CheckPackedCRC() bool {
+    s := md5.Sum((*this.buf)[HeadLen:])
+    return this.checkArea(packedCrcOffset, s[:]);
 }
 
 func (this *Header) setArea(offset int, src []byte) {

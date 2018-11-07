@@ -52,8 +52,9 @@ func Decode(inputFileName string, outputFileName string, version []byte) error {
 	if !h.CheckUnpackedSize(uint64(len(res))) {
 	    return errors.New("invalid unpacked content size")
 	}
-	// - TODO CRC
-		
+	if !h.CheckUnpackedCRC(&res) {
+	    return errors.New("invalid unpacked content CRC")
+	}	
 	return ioutil.WriteFile(outputFileName, res, 0644)
 }
 
@@ -66,6 +67,9 @@ func checkHeader(h *Header, version []byte) error {
 	}
 	if !h.CheckPackedSize() {
 	    return errors.New("invalid packed content size")
+	}
+	if !h.CheckPackedCRC() {
+	    return errors.New("invalid packed CRC")
 	}
 	return nil
 

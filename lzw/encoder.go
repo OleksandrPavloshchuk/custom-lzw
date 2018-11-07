@@ -36,15 +36,16 @@ func Encode(inputFileName string, outputFileName string, version []byte) error {
 	codeWriter := CodeWriter{}
 	encode(src, &codeWriter)
 	res := codeWriter.GetBytes()
-	setHeader(res, uint64(len(src)), version)
+	setHeader(&src, &res, version)
 	return ioutil.WriteFile(outputFileName, res, 0644)
 }
 
-func setHeader(res []byte, srcSize uint64, version []byte) {
-    h := Header{&res}
+func setHeader(src *[]byte, res *[]byte, version []byte) {
+    h := Header{res}
 	h.SetSignature()
 	h.SetVersion(version)
-	h.SetUnpackedSize(srcSize)
+	h.SetUnpackedSize(uint64(len(*src)))
 	h.SetPackedSize()
-	// - TODO CRC
+	h.SetUnpackedCRC(src)
+	h.SetPackedCRC()
 }
