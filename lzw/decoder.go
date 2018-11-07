@@ -1,9 +1,5 @@
 package lzw
 
-import (
-	"errors"
-)
-
 var VersionChecker func(int,*[]byte) bool
 
 func decode(codeReader *CodeReader) []byte {
@@ -37,40 +33,14 @@ func decode(codeReader *CodeReader) []byte {
 
 func Decode(src []byte, version []byte) ([]byte,error) {
 	h := Header{&src}	
-	if err := checkHeader(&h, version); err != nil {
+	if err := h.CheckPackedContent(version); err != nil {
 		return nil, err
 	}
 	codeReader := CodeReader{}
 	codeReader.Set(src)
 	res:=decode(&codeReader)
-	if err := checkUnpackedContent(&h, &res); err!=nil {
+	if err := h.CheckUnpackedContent(&res); err!=nil {
 	    return nil, err
 	}
 	return res, nil
-}
-
-func checkHeader(h *Header, version []byte) error {
-	if !h.CheckSignature() {
-		return errors.New("invalid archive signature")
-	}
-	if !h.CheckVersion(VersionChecker) {
-		return errors.New("invalid archive version")
-	}
-	if !h.CheckPackedSize() {
-	    return errors.New("invalid packed content size")
-	}
-	if !h.CheckPackedCRC() {
-	    return errors.New("invalid packed CRC")
-	}
-	return nil
-}
-
-func checkUnpackedContent(h *Header, res *[]byte) error {
-	if !h.CheckUnpackedSize(uint64(len(*res))) {
-	    return errors.New("invalid unpacked content size")
-	}
-	if !h.CheckUnpackedCRC(res) {
-	    return errors.New("invalid unpacked content CRC")
-	}
-	return nil
 }

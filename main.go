@@ -14,18 +14,18 @@ func call(f func([]byte, []byte) ([]byte,error), inputFileName string, outputFil
 		fmt.Printf("input and output files should not coincide\n")
 		os.Exit(1)
 	} else {
-	    src, err := ioutil.ReadFile(inputFileName)
-    	if err != nil {
-    	    printErrorAndExit(err)
-	    }
-	    res, err := f(src, version.ForHeader())
-	    if err!= nil {
-    	    printErrorAndExit(err)
-	    }
-	    if err:=ioutil.WriteFile(outputFileName, res, 0644); err!=nil {
-    	    printErrorAndExit(err)
+	    if src, err := ioutil.ReadFile(inputFileName); err==nil {
+	        if res, err := f(src, version.ForHeader()); err==nil {
+	            if err:=ioutil.WriteFile(outputFileName, res, 0644); err==nil {
+	                os.Exit(0)
+        	    } else {
+    	            printErrorAndExit(err)
+	            }	            
+	        } else {
+    	        printErrorAndExit(err)	            
+	        }
 	    } else {
-	        os.Exit(0)
+	        printErrorAndExit(err)
 	    }
 	}
 }

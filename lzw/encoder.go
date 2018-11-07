@@ -28,16 +28,7 @@ func Encode(src []byte, version []byte) ([]byte, error) {
 	codeWriter := CodeWriter{}
 	encode(src, &codeWriter)
 	res := codeWriter.GetBytes()
-	setHeader(&src, &res, version)
+	SetHeader(&res, &src, version)
 	return res, nil
 }
 
-func setHeader(src *[]byte, res *[]byte, version []byte) {
-    h := Header{res}
-	h.SetSignature()
-	h.SetVersion(version)
-	h.SetUnpackedSize(uint64(len(*src)))
-	h.SetPackedSize()
-	h.SetUnpackedCRC(src)
-	h.SetPackedCRC()
-}

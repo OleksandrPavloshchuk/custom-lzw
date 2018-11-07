@@ -2,6 +2,7 @@ package lzw
 
 import (
     "crypto/md5"
+    "errors"
 )
 
 const HeadLen = 54
@@ -16,67 +17,104 @@ type Header struct {
     buf *[]byte
 }
 
-func (this *Header) SetSignature() {
-    this.setArea(0, signature)
+func (h *Header) CheckPackedContent(version []byte) error {
+	if !h.checkSignature() {
+		return errors.New("invalid archive signature")
+	}
+	if !h.checkVersion(VersionChecker) {
+		return errors.New("invalid archive version")
+	}
+	if !h.checkPackedSize() {
+	    return errors.New("invalid packed content size")
+	}
+	if !h.checkPackedCRC() {
+	    return errors.New("invalid packed CRC")
+	}
+	return nil
 }
 
-func (this *Header) CheckSignature() bool {
-    return this.checkArea(0, signature)
+func (h *Header) CheckUnpackedContent(res *[]byte) error {
+	if !h.checkUnpackedSize(uint64(len(*res))) {
+	    return errors.New("invalid unpacked content size")
+	}
+	if !h.checkUnpackedCRC(res) {
+	    return errors.New("invalid unpacked content CRC")
+	}
+	return nil
 }
 
-func (this *Header) SetVersion(src []byte) {
-    this.setArea(len(signature), src)
+func SetHeader(res *[]byte, src *[]byte, version []byte) {
+    h:=Header{res}
+	h.setSignature()
+	h.setVersion(version)
+	h.setUnpackedSize(uint64(len(*src)))
+	h.setPackedSize()
+	h.setUnpackedCRC(src)
+	h.setPackedCRC()
 }
 
-func (this *Header) CheckVersion(checker func(int,*[]byte) bool) bool {
-    return checker(len(signature), this.buf)
+
+func (h *Header) setSignature() {
+    h.setArea(0, signature)
 }
 
-func (this *Header) SetUnpackedSize(size uint64) {
-    this.setArea( unpackedSizeOffset, toBytes(size))
+func (h *Header) checkSignature() bool {
+    return h.checkArea(0, signature)
 }
 
-func (this *Header) SetPackedSize() {
-    this.setArea( packedSizeOffset, toBytes(uint64(len(*this.buf)-HeadLen)))
+func (h *Header) setVersion(src []byte) {
+    h.setArea(len(signature), src)
 }
 
-func (this *Header) CheckUnpackedSize(size uint64) bool {
-    return size==fromBytes((*this.buf)[unpackedSizeOffset:unpackedSizeOffset+8])
+func (h *Header) checkVersion(checker func(int,*[]byte) bool) bool {
+    return checker(len(signature), h.buf)
 }
 
-func (this *Header) CheckPackedSize() bool {
-    return uint64(len(*this.buf)-HeadLen)==fromBytes((*this.buf)[packedSizeOffset:packedSizeOffset+8])
+func (h *Header) setUnpackedSize(size uint64) {
+    h.setArea( unpackedSizeOffset, toBytes(size))
 }
 
-func (this *Header) SetUnpackedCRC(src *[]byte) {
+func (h *Header) setPackedSize() {
+    h.setArea( packedSizeOffset, toBytes(uint64(len(*h.buf)-HeadLen)))
+}
+
+func (h *Header) checkUnpackedSize(size uint64) bool {
+    return size==fromBytes((*h.buf)[unpackedSizeOffset:unpackedSizeOffset+8])
+}
+
+func (h *Header) checkPackedSize() bool {
+    return uint64(len(*h.buf)-HeadLen)==fromBytes((*h.buf)[packedSizeOffset:packedSizeOffset+8])
+}
+
+func (h *Header) setUnpackedCRC(src *[]byte) {
     s := md5.Sum(*src)
-    this.setArea( unpackedCrcOffset, s[:])
+    h.setArea( unpackedCrcOffset, s[:])
 }
 
-func (this *Header) CheckUnpackedCRC(src *[]byte) bool {
+func (h *Header) checkUnpackedCRC(src *[]byte) bool {
     s := md5.Sum(*src)
-    return this.checkArea(unpackedCrcOffset, s[:]);
+    return h.checkArea(unpackedCrcOffset, s[:]);
 }
 
-func (this *Header) SetPackedCRC() {
-    s := md5.Sum((*this.buf)[HeadLen:])
-    this.setArea( packedCrcOffset, s[:])
+func (h *Header) setPackedCRC() {
+    s := md5.Sum((*h.buf)[HeadLen:])
+    h.setArea( packedCrcOffset, s[:])
 }
 
-func (this *Header) CheckPackedCRC() bool {
-    s := md5.Sum((*this.buf)[HeadLen:])
-    return this.checkArea(packedCrcOffset, s[:]);
+func (h *Header) checkPackedCRC() bool {
+    s := md5.Sum((*h.buf)[HeadLen:])
+    return h.checkArea(packedCrcOffset, s[:]);
 }
 
-func (this *Header) setArea(offset int, src []byte) {
+func (h *Header) setArea(offset int, src []byte) {
 	for i := 0; i < len(src); i++ {
-		(*this.buf)[offset+i] = src[i]
+		(*h.buf)[offset+i] = src[i]
 	}    
 }
 
-func (this *Header) checkArea(offset int, src []byte) bool {
+func (h *Header) checkArea(offset int, src []byte) bool {
 	for i := 0; i < len(src); i++ {
-		if (*this.buf)[offset+i] != src[i] {
+		if (*h.buf)[offset+i] != src[i] {
 			return false
 		}
 	}
