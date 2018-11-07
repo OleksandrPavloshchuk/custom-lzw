@@ -21,7 +21,7 @@ func (this *CodeWriter) Accept(code uint, length uint) {
 
 func (this *CodeWriter) Write(fileName string) error {
 	size := (this.start + 7) / 8
-	result := make([]byte, 0)
+	result := make([]byte, HeadLen)
 	for i := 0; uint(i) < size; i++ {
 		result = append(result, this.toByte(uint(i<<3)))
 	}

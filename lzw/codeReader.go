@@ -31,15 +31,17 @@ func (this *CodeReader) Read(fileName string) error {
 		return err
 	}
 	counter := uint(0)
-	for _, b := range data {
-		d := byte(1)
-		for i := 0; i < 8; i++ {
-			if d&b != 0 {
-				this.bitSet.Set(counter)
-			}
-			counter++
-			d <<= 1
-		}
+	for n, b := range data {
+	    if n >= HeadLen {
+    		d := byte(1)
+	    	for i := 0; i < 8; i++ {
+	    		if d&b != 0 {
+	    			this.bitSet.Set(counter)
+	    		}
+	    		counter++
+	    		d <<= 1
+	    	}
+	    }
 	}
 	return nil
 }
