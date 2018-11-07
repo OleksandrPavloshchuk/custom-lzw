@@ -1,9 +1,7 @@
 package lzw
 
 func encode(src []byte, cw *codeWriter) {
-	dict := dictionary{}
-	dict.init()
-
+	dict := createDictionary()
 	buf := make([]byte, 0)
 	for _, b := range src {
 		test := append(buf, b)

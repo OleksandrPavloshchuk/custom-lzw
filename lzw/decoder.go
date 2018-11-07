@@ -3,9 +3,7 @@ package lzw
 var VersionChecker func(int,*[]byte) bool
 
 func decode(cr *codeReader) []byte {
-	dict := dictionary{}
-	dict.init()
-
+	dict := createDictionary()
 	result := make([]byte, 0)
 	buf := make([]byte, 0)
 	for cr.hasCodes() {
@@ -32,7 +30,7 @@ func decode(cr *codeReader) []byte {
 }
 
 func Decode(src []byte, version []byte) ([]byte,error) {
-	h := Header{&src}	
+	h := header{&src}	
 	if err := h.CheckPackedContent(version); err != nil {
 		return nil, err
 	}

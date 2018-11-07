@@ -8,14 +8,14 @@ type dictionary struct {
 	codeSize uint
 }
 
-func (this *dictionary) init() {
-	this.index = make(map[string]uint)
-	this.codeSize = 9
+func createDictionary() dictionary{
+    d:=dictionary { index: make(map[string]uint), codeSize: 9 }
 	for b := 0; b < 256; b++ {
 		var a [1]byte
 		a[0] = byte(b)
-		this.put(a[:])
+		d.put(a[:])
 	}
+	return d
 }
 
 func (this *dictionary) getCodeSize() uint {
