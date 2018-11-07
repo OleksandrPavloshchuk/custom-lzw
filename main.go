@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"./version"
+	"./lzw"
 )
 
 func call(f func(string, string) error, inputFileName string, outputFileName string) {
@@ -21,34 +23,10 @@ func call(f func(string, string) error, inputFileName string, outputFileName str
 	}
 }
 
-func encode(inputFileName string, outputFileName string) error {
-	src, err := ioutil.ReadFile(inputFileName)
-	if err != nil {
-		return err
-	}
-	codeWriter := CodeWriter{}
-	Encode(src, &codeWriter)
-	return codeWriter.Write(outputFileName)
-}
-
-func decode(inputFileName string, outputFileName string) error {
-	codeReader := CodeReader{}
-	if err := codeReader.Read(inputFileName); err != nil {
-		return err
-	}
-	result := Decode(&codeReader)
-	return ioutil.WriteFile(outputFileName, result, 0644)
-}
-
 func Usage() {
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 	flag.PrintDefaults()
 	os.Exit(1)
-}
-
-func printVersion() {
-	PrintVersion(os.Stdout)
-	os.Exit(0)
 }
 
 func main() {
@@ -62,16 +40,17 @@ func main() {
 		Usage()
 	}
 	if *versionFlag {
-		printVersion()
+    	version.Print(os.Stdout)
+	    os.Exit(0)
 	}
 	if (!*archiveFlag && !*extractFlag) || (*archiveFlag && *extractFlag) || len(*inputFileName) == 0 || len(*outputFileName) == 0 {
 		Usage()
 	} else {
 		var handler func(string, string) error
 		if *archiveFlag {
-			handler = encode
-		} else if *extractFlag {
-			handler = decode
+			handler = lzw.Encode
+		} else {
+			handler = lzw.Decode
 		}
 		call(handler, *inputFileName, *outputFileName)
 	}
