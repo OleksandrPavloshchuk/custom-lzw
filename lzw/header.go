@@ -7,47 +7,51 @@ const unpackedSizeOffset = 6
 const packedSizeOffset = 14
 const crcOffset = 22
 
-func SetSignature(head *[]byte) {
-    setArea(head, 0, signature)
+type Header struct {
+    buf *[]byte
 }
 
-func CheckSignature(head *[]byte) bool {
-    return checkArea(head, 0, signature)
+func (this *Header) SetSignature() {
+    this.setArea(0, signature)
 }
 
-func SetVersion(head *[]byte, src []byte) {
-    setArea(head, len(signature), src)
+func (this *Header) CheckSignature() bool {
+    return this.checkArea(0, signature)
 }
 
-func CheckVersion(head *[]byte, checker func(int,*[]byte) bool) bool {
-    return checker(len(signature), head)
+func (this *Header) SetVersion(src []byte) {
+    this.setArea(len(signature), src)
 }
 
-func SetUnpackedSize(head *[]byte, size uint64) {
-    setArea( head, unpackedSizeOffset, toBytes(size))
+func (this *Header) CheckVersion(checker func(int,*[]byte) bool) bool {
+    return checker(len(signature), this.buf)
 }
 
-func SetPackedSize(head *[]byte) {
-    setArea( head, packedSizeOffset, toBytes(uint64(len(*head)-HeadLen)))
+func (this *Header) SetUnpackedSize(size uint64) {
+    this.setArea( unpackedSizeOffset, toBytes(size))
 }
 
-func CheckUnpackedSize(head *[]byte, size uint64) bool {
-    return size==fromBytes((*head)[unpackedSizeOffset:unpackedSizeOffset+8])
+func (this *Header) SetPackedSize() {
+    this.setArea( packedSizeOffset, toBytes(uint64(len(*this.buf)-HeadLen)))
 }
 
-func CheckPackedSize(head *[]byte, size uint64) bool {
-    return size-HeadLen==fromBytes((*head)[packedSizeOffset:packedSizeOffset+8])
+func (this *Header) CheckUnpackedSize(size uint64) bool {
+    return size==fromBytes((*this.buf)[unpackedSizeOffset:unpackedSizeOffset+8])
 }
 
-func setArea(head *[]byte, offset int, src []byte) {
+func (this *Header) CheckPackedSize() bool {
+    return uint64(len(*this.buf)-HeadLen)==fromBytes((*this.buf)[packedSizeOffset:packedSizeOffset+8])
+}
+
+func (this *Header) setArea(offset int, src []byte) {
 	for i := 0; i < len(src); i++ {
-		(*head)[offset+i] = src[i]
+		(*this.buf)[offset+i] = src[i]
 	}    
 }
 
-func checkArea(head *[]byte, offset int, src []byte) bool {
+func (this *Header) checkArea(offset int, src []byte) bool {
 	for i := 0; i < len(src); i++ {
-		if (*head)[offset+i] != src[i] {
+		if (*this.buf)[offset+i] != src[i] {
 			return false
 		}
 	}

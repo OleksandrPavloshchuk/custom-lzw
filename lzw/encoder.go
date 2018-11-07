@@ -41,9 +41,10 @@ func Encode(inputFileName string, outputFileName string, version []byte) error {
 }
 
 func setHeader(res []byte, srcSize uint64, version []byte) {
-	SetSignature(&res)
-	SetVersion(&res, version)
-	SetUnpackedSize(&res, srcSize)
-	SetPackedSize(&res)
+    h := Header{&res}
+	h.SetSignature()
+	h.SetVersion(version)
+	h.SetUnpackedSize(srcSize)
+	h.SetPackedSize()
 	// - TODO CRC
 }

@@ -41,13 +41,15 @@ func Decode(inputFileName string, outputFileName string, version []byte) error {
 	if err != nil {
 		return err
 	}
-	if err := checkHeader(&src, version); err != nil {
+	h := Header{&src}
+	
+	if err := checkHeader(&h, version); err != nil {
 		return err
 	}
 	codeReader := CodeReader{}
 	codeReader.Set(src)
 	res:=decode(&codeReader)
-	if !CheckUnpackedSize(&src, uint64(len(res))) {
+	if !h.CheckUnpackedSize(uint64(len(res))) {
 	    return errors.New("invalid unpacked content size")
 	}
 	// - TODO CRC
@@ -55,14 +57,14 @@ func Decode(inputFileName string, outputFileName string, version []byte) error {
 	return ioutil.WriteFile(outputFileName, res, 0644)
 }
 
-func checkHeader(src *[]byte, version []byte) error {
-	if !CheckSignature(src) {
+func checkHeader(h *Header, version []byte) error {
+	if !h.CheckSignature() {
 		return errors.New("invalid archive signature")
 	}
-	if !CheckVersion(src, VersionChecker) {
+	if !h.CheckVersion(VersionChecker) {
 		return errors.New("invalid archive version")
 	}
-	if !CheckPackedSize(src, uint64(len(*src))) {
+	if !h.CheckPackedSize() {
 	    return errors.New("invalid packed content size")
 	}
 	return nil
