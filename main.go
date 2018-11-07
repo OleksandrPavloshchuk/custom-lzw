@@ -49,6 +49,7 @@ func main() {
 		if *archiveFlag {
 			handler = lzw.Encode
 		} else {
+		    lzw.VersionChecker = version.IsCorrect
 			handler = lzw.Decode
 		}
 		call(handler, *inputFileName, *outputFileName)

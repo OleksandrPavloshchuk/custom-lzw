@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 )
 
+var VersionChecker func(int,*[]byte) bool
+
 func decode(codeReader *CodeReader) []byte {
 	dict := Dictionary{}
 	dict.Init()
@@ -44,19 +46,25 @@ func Decode(inputFileName string, outputFileName string, version []byte) error {
 	}
 	codeReader := CodeReader{}
 	codeReader.Set(src)
-	return ioutil.WriteFile(outputFileName, decode(&codeReader), 0644)
+	res:=decode(&codeReader)
+	if !CheckUnpackedSize(&src, uint64(len(res))) {
+	    return errors.New("invalid unpacked content size")
+	}
+	// - TODO CRC
+		
+	return ioutil.WriteFile(outputFileName, res, 0644)
 }
 
 func checkHeader(src *[]byte, version []byte) error {
 	if !CheckSignature(src) {
 		return errors.New("invalid archive signature")
 	}
-	if !CheckVersion(src, version) {
+	if !CheckVersion(src, VersionChecker) {
 		return errors.New("invalid archive version")
 	}
-	// - TODO unpacked size
-	// - TODO packed size
-	// - TODO CRC
+	if !CheckPackedSize(src, uint64(len(*src))) {
+	    return errors.New("invalid packed content size")
+	}
 	return nil
 
 }

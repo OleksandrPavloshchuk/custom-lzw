@@ -19,9 +19,7 @@ func Print(writer io.Writer) {
 }
 
 func IsCorrect(offset int, v *[]byte) bool {
-    return isMajorCorrect(get(offset, v, 0))
-        && isMinorCorrect(get(offset, v, 1)) 
-        && isPatchCorrect(get(offset, v, 2))
+    return isMajorCorrect(get(offset, v, 0)) && isMinorCorrect(get(offset, v, 1)) && isPatchCorrect(get(offset, v, 2))
 }
 
 func get(offset int, v *[]byte, i int) byte {
