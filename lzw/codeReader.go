@@ -1,9 +1,5 @@
 package lzw
 
-import (
-	"io/ioutil"
-)
-
 type CodeReader struct {
 	CodeIO
 }
@@ -25,11 +21,7 @@ func (this *CodeReader) Get(codeLength uint) uint {
 	return r
 }
 
-func (this *CodeReader) Read(fileName string) error {
-	data, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return err
-	}
+func (this *CodeReader) Read(data []byte) {
 	counter := uint(0)
 	for n, b := range data {
 	    if n >= HeadLen {
@@ -43,5 +35,4 @@ func (this *CodeReader) Read(fileName string) error {
 	    	}
 	    }
 	}
-	return nil
 }

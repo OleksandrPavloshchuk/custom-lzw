@@ -1,9 +1,5 @@
 package lzw
 
-import (
-	"io/ioutil"
-)
-
 type CodeWriter struct {
 	CodeIO
 }
@@ -19,13 +15,13 @@ func (this *CodeWriter) Accept(code uint, length uint) {
 	}
 }
 
-func (this *CodeWriter) Write(fileName string) error {
+func (this *CodeWriter) GetBytes() []byte {
 	size := (this.start + 7) / 8
 	result := make([]byte, HeadLen)
 	for i := 0; uint(i) < size; i++ {
 		result = append(result, this.toByte(uint(i<<3)))
 	}
-	return ioutil.WriteFile(fileName, result, 0644)
+	return result
 }
 
 func (this *CodeWriter) toByte(offset uint) byte {

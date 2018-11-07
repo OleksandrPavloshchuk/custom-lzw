@@ -34,7 +34,19 @@ func Encode(inputFileName string, outputFileName string) error {
 		return err
 	}
 	codeWriter := CodeWriter{}
-	encode(src, &codeWriter)
-	return codeWriter.Write(outputFileName)
+	encode(src, &codeWriter)	
+	res:=codeWriter.GetBytes()	
+	setHeader( res, uint64(len(src)))	
+	return ioutil.WriteFile(outputFileName, res, 0644)
+}
+
+func setHeader(res []byte, srcSize uint64 ) {
+	// - signature
+	SetSignature(&res)
+	
+	// - TODO version
+	// - TODO unpacked size
+	// - TODO packed size
+	// - TODO CRC    
 }
 

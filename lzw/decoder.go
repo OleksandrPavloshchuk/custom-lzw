@@ -34,10 +34,26 @@ func decode(codeReader *CodeReader) []byte {
 }
 
 func Decode(inputFileName string, outputFileName string) error {
-	codeReader := CodeReader{}
-	if err := codeReader.Read(inputFileName); err != nil {
+	src, err := ioutil.ReadFile(inputFileName)
+	if err != nil {
 		return err
 	}
+	if err:=checkHeader(src); err!=nil {
+	    return err
+	}
+	codeReader := CodeReader{}
+	codeReader.Read(src)
 	result := decode(&codeReader)
 	return ioutil.WriteFile(outputFileName, result, 0644)
+}
+
+func checkHeader(src []byte) error {
+	// Set header content:
+	// - TODO signature
+	// - TODO version
+	// - TODO unpacked size
+	// - TODO packed size
+	// - TODO CRC
+    return nil
+    
 }
