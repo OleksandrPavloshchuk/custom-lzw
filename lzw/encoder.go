@@ -1,7 +1,7 @@
 package lzw
 
 import (
-    "io/ioutil"
+	"io/ioutil"
 )
 
 func encode(src []byte, codeWriter *CodeWriter) {
@@ -34,19 +34,17 @@ func Encode(inputFileName string, outputFileName string) error {
 		return err
 	}
 	codeWriter := CodeWriter{}
-	encode(src, &codeWriter)	
-	res:=codeWriter.GetBytes()	
-	setHeader( res, uint64(len(src)))	
+	encode(src, &codeWriter)
+	res := codeWriter.GetBytes()
+	setHeader(res, uint64(len(src)))
 	return ioutil.WriteFile(outputFileName, res, 0644)
 }
 
-func setHeader(res []byte, srcSize uint64 ) {
-	// - signature
+func setHeader(res []byte, srcSize uint64) {
 	SetSignature(&res)
-	
+
 	// - TODO version
 	// - TODO unpacked size
 	// - TODO packed size
-	// - TODO CRC    
+	// - TODO CRC
 }
-

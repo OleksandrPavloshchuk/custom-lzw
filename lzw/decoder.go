@@ -1,7 +1,8 @@
 package lzw
 
 import (
-    "io/ioutil"
+	"errors"
+	"io/ioutil"
 )
 
 func decode(codeReader *CodeReader) []byte {
@@ -38,22 +39,22 @@ func Decode(inputFileName string, outputFileName string) error {
 	if err != nil {
 		return err
 	}
-	if err:=checkHeader(src); err!=nil {
-	    return err
+	if err := checkHeader(&src); err != nil {
+		return err
 	}
 	codeReader := CodeReader{}
-	codeReader.Read(src)
-	result := decode(&codeReader)
-	return ioutil.WriteFile(outputFileName, result, 0644)
+	codeReader.Set(src)
+	return ioutil.WriteFile(outputFileName, decode(&codeReader), 0644)
 }
 
-func checkHeader(src []byte) error {
-	// Set header content:
-	// - TODO signature
+func checkHeader(src *[]byte) error {
+	if !CheckSignature(src) {
+		return errors.New("invalid archive signature")
+	}
 	// - TODO version
 	// - TODO unpacked size
 	// - TODO packed size
 	// - TODO CRC
-    return nil
-    
+	return nil
+
 }
