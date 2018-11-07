@@ -5,7 +5,7 @@ import (
 )
 
 type CodeReader struct {
-    CodeIO
+	CodeIO
 }
 
 func (this *CodeReader) HasCodes() bool {

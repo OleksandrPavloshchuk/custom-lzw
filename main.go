@@ -62,9 +62,9 @@ func main() {
 		Usage()
 	}
 	if *versionFlag {
-        printVersion()
+		printVersion()
 	}
-	if (!*archiveFlag && !*extractFlag) || (*archiveFlag && *extractFlag) || len(*inputFileName)==0 || len(*outputFileName)==0 {
+	if (!*archiveFlag && !*extractFlag) || (*archiveFlag && *extractFlag) || len(*inputFileName) == 0 || len(*outputFileName) == 0 {
 		Usage()
 	} else {
 		var handler func(string, string) error

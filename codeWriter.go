@@ -5,7 +5,7 @@ import (
 )
 
 type CodeWriter struct {
-    CodeIO
+	CodeIO
 }
 
 func (this *CodeWriter) Accept(code uint, length uint) {
