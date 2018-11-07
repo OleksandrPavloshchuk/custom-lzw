@@ -34,12 +34,12 @@ func decode(codeReader *CodeReader) []byte {
 	return result
 }
 
-func Decode(inputFileName string, outputFileName string) error {
+func Decode(inputFileName string, outputFileName string, version []byte) error {
 	src, err := ioutil.ReadFile(inputFileName)
 	if err != nil {
 		return err
 	}
-	if err := checkHeader(&src); err != nil {
+	if err := checkHeader(&src, version); err != nil {
 		return err
 	}
 	codeReader := CodeReader{}
@@ -47,11 +47,13 @@ func Decode(inputFileName string, outputFileName string) error {
 	return ioutil.WriteFile(outputFileName, decode(&codeReader), 0644)
 }
 
-func checkHeader(src *[]byte) error {
+func checkHeader(src *[]byte, version []byte) error {
 	if !CheckSignature(src) {
 		return errors.New("invalid archive signature")
 	}
-	// - TODO version
+	if !CheckVersion(src, version) {
+		return errors.New("invalid archive version")
+	}
 	// - TODO unpacked size
 	// - TODO packed size
 	// - TODO CRC

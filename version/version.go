@@ -10,12 +10,22 @@ const minor = byte(0)
 const patch = byte(3)
 const date = "2018-11-07"
 
+func ForHeader() []byte {
+    return []byte{major,minor,patch}
+}
+
 func Print(writer io.Writer) {
 	fmt.Fprintf(writer, "Version: %d.%d.%d %v\n", major, minor, patch, date)
 }
 
-func IsCorrect(v []byte) bool {
-    return isMajorCorrect(v[0]) && isMinorCorrect(v[1]) && isPatchCorrect(v[2])
+func IsCorrect(offset int, v *[]byte) bool {
+    return isMajorCorrect(get(offset, v, 0))
+        && isMinorCorrect(get(offset, v, 1)) 
+        && isPatchCorrect(get(offset, v, 2))
+}
+
+func get(offset int, v *[]byte, i int) byte {
+    return (*v)[offset+i]
 }
 
 func isMajorCorrect(v byte) bool {

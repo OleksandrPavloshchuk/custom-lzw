@@ -28,7 +28,7 @@ func emit(s []byte, dict Dictionary, codeWriter *CodeWriter) {
 	codeWriter.Accept(dict.GetIndex(s), dict.GetCodeSize())
 }
 
-func Encode(inputFileName string, outputFileName string) error {
+func Encode(inputFileName string, outputFileName string, version []byte) error {
 	src, err := ioutil.ReadFile(inputFileName)
 	if err != nil {
 		return err
@@ -36,14 +36,14 @@ func Encode(inputFileName string, outputFileName string) error {
 	codeWriter := CodeWriter{}
 	encode(src, &codeWriter)
 	res := codeWriter.GetBytes()
-	setHeader(res, uint64(len(src)))
+	setHeader(res, uint64(len(src)), version)
 	return ioutil.WriteFile(outputFileName, res, 0644)
 }
 
-func setHeader(res []byte, srcSize uint64) {
+func setHeader(res []byte, srcSize uint64, version []byte) {
 	SetSignature(&res)
+	SetVersion(&res, version)
 
-	// - TODO version
 	// - TODO unpacked size
 	// - TODO packed size
 	// - TODO CRC

@@ -8,12 +8,12 @@ import (
 	"./lzw"
 )
 
-func call(f func(string, string) error, inputFileName string, outputFileName string) {
+func call(f func(string, string, []byte) error, inputFileName string, outputFileName string) {
 	if inputFileName == outputFileName {
 		fmt.Printf("input and output files should not coincide\n")
 		os.Exit(1)
 	} else {
-		if err := f(inputFileName, outputFileName); err != nil {
+		if err := f(inputFileName, outputFileName, version.ForHeader()); err != nil {
 			fmt.Printf("ERROR: %v\n", err)
 			os.Exit(2)
 		} else {
@@ -45,7 +45,7 @@ func main() {
 	if (!*archiveFlag && !*extractFlag) || (*archiveFlag && *extractFlag) || len(*inputFileName) == 0 || len(*outputFileName) == 0 {
 		Usage()
 	} else {
-		var handler func(string, string) error
+		var handler func(string, string, []byte) error
 		if *archiveFlag {
 			handler = lzw.Encode
 		} else {
