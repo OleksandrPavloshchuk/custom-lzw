@@ -11,7 +11,7 @@ import (
 
 func call(f func([]byte, []byte) ([]byte,error), inputFileName string, outputFileName string) {
 	if inputFileName == outputFileName {
-		fmt.Printf("input and output files should not coincide\n")
+		fmt.Fprintf(os.Stderr, "input and output files should not coincide\n")
 		os.Exit(1)
 	} else {
 	    if src, err := ioutil.ReadFile(inputFileName); err==nil {
@@ -31,7 +31,7 @@ func call(f func([]byte, []byte) ([]byte,error), inputFileName string, outputFil
 }
 
 func printErrorAndExit(err error) {
-	fmt.Printf("ERROR: %v\n", err)
+	fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
     os.Exit(2)    
 }
 
