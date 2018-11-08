@@ -2,7 +2,7 @@ package lzw
 
 var VersionChecker func(int,*[]byte) bool
 
-func decode(cr *codeReader) []byte {
+func decode(cr codeReader) []byte {
 	dict := createDictionary()
 	result := make([]byte, 0)
 	buf := make([]byte, 0)
@@ -37,9 +37,7 @@ func Decode(src []byte, version []byte) ([]byte,error) {
 	if err := h.CheckPackedContent(version); err != nil {
 		return nil, err
 	}
-	cr := codeReader{}
-	cr.set(src)
-	res:=decode(&cr)
+	res:=decode(acquireCodes(src))
 	if err := h.CheckUnpackedContent(&res); err!=nil {
 	    return nil, err
 	}

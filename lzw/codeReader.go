@@ -21,18 +21,21 @@ func (this *codeReader) get(codeLength uint) uint {
 	return r
 }
 
-func (this *codeReader) set(data []byte) {
+func acquireCodes(src []byte) codeReader {
+    cr := codeReader{}
 	counter := uint(0)
-	for n, b := range data {
+	for n, b := range src {
 		if n >= HeadLen {
 			d := byte(1)
 			for i := 0; i < 8; i++ {
 				if d&b != 0 {
-					this.bitSet.set(counter)
+					cr.bitSet.set(counter)
 				}
 				counter++
 				d <<= 1
 			}
 		}
-	}
+	}    
+    return cr
 }
+
