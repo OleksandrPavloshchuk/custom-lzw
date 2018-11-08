@@ -20,10 +20,12 @@ func readStdIn(_ string) ([]byte,error) {
         }
         r = append( r, b...)
     }   
-    
-    fmt.Printf("TRACE: %s\n", string(r))
-     
     return r,nil
+}
+
+func writeStdOut(_ string, data []byte, _ os.FileMode) error {
+    _,err := os.Stdout.Write(data)
+    return err
 }
 
 
@@ -32,16 +34,24 @@ func call(f func([]byte, []byte) ([]byte,error), inputFileName string, outputFil
 		fmt.Fprintf(os.Stderr, "input and output files should not coincide\n")
 		os.Exit(1)
 	} else {
+	
 	    var read func(string)([]byte,error)
 	    if len(inputFileName)==0 {
 	        read = readStdIn
 	    } else {
 	        read = ioutil.ReadFile
 	    }
+	    
+	    var write func(string,[]byte,os.FileMode) error
+	    if len(outputFileName)==0 {
+	        write = writeStdOut
+	    } else {
+	        write = ioutil.WriteFile
+	    }	    
 	
 	    if src, err := read(inputFileName); err==nil {
 	        if res, err := f(src, version.ForHeader()); err==nil {
-	            if err:=ioutil.WriteFile(outputFileName, res, 0644); err==nil {
+	            if err:=write(outputFileName, res, 0644); err==nil {
 	                os.Exit(0)
         	    } else {
     	            printErrorAndExit(err)
