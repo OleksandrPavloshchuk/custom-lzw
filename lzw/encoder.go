@@ -1,6 +1,9 @@
 package lzw
 
 func encode(src []byte, cw *codeWriter) {
+    if len(src)==0 {
+        return
+    }
 	dict := createDictionary()
 	buf := make([]byte, 0)
 	for _, b := range src {
@@ -26,6 +29,9 @@ func Encode(src []byte, version []byte) ([]byte, error) {
 	cw := codeWriter{}
 	encode(src, &cw)
 	res := cw.getBytes()
+	if len(res)==HeadLen {
+	    return []byte{}, nil
+	}
 	setHeader(&res, &src, version)
 	return res, nil
 }

@@ -83,7 +83,8 @@ func (h *header) checkUnpackedSize(size uint64) bool {
 }
 
 func (h *header) checkPackedSize() bool {
-    return uint64(len(*h.buf)-HeadLen)==fromBytes((*h.buf)[packedSizeOffset:packedSizeOffset+8])
+    size := fromBytes((*h.buf)[packedSizeOffset:packedSizeOffset+8])
+    return uint64(len(*h.buf)-HeadLen)==size
 }
 
 func (h *header) setUnpackedCRC(src *[]byte) {

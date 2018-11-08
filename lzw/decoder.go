@@ -30,6 +30,9 @@ func decode(cr *codeReader) []byte {
 }
 
 func Decode(src []byte, version []byte) ([]byte,error) {
+    if len(src)==0 {
+        return []byte{},nil
+    }
 	h := header{&src}	
 	if err := h.CheckPackedContent(version); err != nil {
 		return nil, err
