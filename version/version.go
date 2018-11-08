@@ -2,20 +2,19 @@ package version
 
 import (
 	"fmt"
-	"io"
 )
 
 const major = byte(0)
 const minor = byte(0)
-const patch = byte(4)
-const date = "2018-11-07"
+const patch = byte(5)
+const date = "2018-11-08"
 
 func ForHeader() []byte {
     return []byte{major,minor,patch}
 }
 
-func Print(writer io.Writer) {
-	fmt.Fprintf(writer, "Version: %d.%d.%d %v\n", major, minor, patch, date)
+func Print() {
+	fmt.Printf("Version: %d.%d.%d %v\n", major, minor, patch, date)
 }
 
 func IsCorrect(offset int, v *[]byte) bool {

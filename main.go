@@ -1,6 +1,7 @@
 package main
 
 import (
+    "io"
     "io/ioutil"
 	"flag"
 	"fmt"
@@ -9,12 +10,36 @@ import (
 	"./lzw"
 )
 
+func readStdIn(_ string) ([]byte,error) {
+    r := make([]byte,0)
+    b := make([]byte,1)
+    for {
+        _,err := os.Stdin.Read(b)
+        if err==io.EOF {
+            break
+        }
+        r = append( r, b...)
+    }   
+    
+    fmt.Printf("TRACE: %s\n", string(r))
+     
+    return r,nil
+}
+
+
 func call(f func([]byte, []byte) ([]byte,error), inputFileName string, outputFileName string) {
-	if inputFileName == outputFileName {
+	if inputFileName == outputFileName && len(inputFileName)!=0 {
 		fmt.Fprintf(os.Stderr, "input and output files should not coincide\n")
 		os.Exit(1)
 	} else {
-	    if src, err := ioutil.ReadFile(inputFileName); err==nil {
+	    var read func(string)([]byte,error)
+	    if len(inputFileName)==0 {
+	        read = readStdIn
+	    } else {
+	        read = ioutil.ReadFile
+	    }
+	
+	    if src, err := read(inputFileName); err==nil {
 	        if res, err := f(src, version.ForHeader()); err==nil {
 	            if err:=ioutil.WriteFile(outputFileName, res, 0644); err==nil {
 	                os.Exit(0)
@@ -52,10 +77,10 @@ func main() {
 		Usage()
 	}
 	if *versionFlag {
-    	version.Print(os.Stdout)
+    	version.Print()
 	    os.Exit(0)
 	}
-	if (!*archiveFlag && !*extractFlag) || (*archiveFlag && *extractFlag) || len(*inputFileName) == 0 || len(*outputFileName) == 0 {
+	if (!*archiveFlag && !*extractFlag) || (*archiveFlag && *extractFlag) {
 		Usage()
 	} else {
 		var handler func([]byte, []byte) ([]byte, error)
