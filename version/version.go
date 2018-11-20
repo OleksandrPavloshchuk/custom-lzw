@@ -10,7 +10,7 @@ const patch = byte(6)
 const date = "2018-11-20"
 
 func ForHeader() []byte {
-    return []byte{major,minor,patch}
+	return []byte{major, minor, patch}
 }
 
 func Print() {
@@ -18,21 +18,21 @@ func Print() {
 }
 
 func IsCorrect(offset int, v *[]byte) bool {
-    return isMajorCorrect(get(offset, v, 0)) && isMinorCorrect(get(offset, v, 1)) && isPatchCorrect(get(offset, v, 2))
+	return isMajorCorrect(get(offset, v, 0)) && isMinorCorrect(get(offset, v, 1)) && isPatchCorrect(get(offset, v, 2))
 }
 
 func get(offset int, v *[]byte, i int) byte {
-    return (*v)[offset+i]
+	return (*v)[offset+i]
 }
 
 func isMajorCorrect(v byte) bool {
-    return v==major
+	return v == major
 }
 
 func isMinorCorrect(v byte) bool {
-    return v==minor
+	return v == minor
 }
 
 func isPatchCorrect(v byte) bool {
-    return v==patch
+	return v == patch
 }

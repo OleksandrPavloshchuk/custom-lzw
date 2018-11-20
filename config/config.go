@@ -27,7 +27,7 @@ var (
 func GetReader() func() ([]byte, error) {
 	if len(*inputFile) != 0 {
 		return func() ([]byte, error) {
-		    return ioutil.ReadFile(*inputFile)
+			return ioutil.ReadFile(*inputFile)
 		}
 	} else {
 		return func() ([]byte, error) {
@@ -47,9 +47,9 @@ func GetReader() func() ([]byte, error) {
 
 func GetWriter() func([]byte) error {
 	if len(*outputFile) != 0 {
-	    return func(data []byte) error {
-    		return ioutil.WriteFile(*outputFile, data, 0644)
-	    }
+		return func(data []byte) error {
+			return ioutil.WriteFile(*outputFile, data, 0644)
+		}
 	} else {
 		return func(data []byte) error {
 			_, err := os.Stdout.Write(data)
@@ -59,14 +59,14 @@ func GetWriter() func([]byte) error {
 }
 
 func GetMode() Mode {
-    if *isVersion {
-        return Version
-    }
-    if *isArchive {
-        return Archive
-    } else {
-        return Extract
-    }
+	if *isVersion {
+		return Version
+	}
+	if *isArchive {
+		return Archive
+	} else {
+		return Extract
+	}
 }
 
 func Usage() {
@@ -88,8 +88,8 @@ func Acquire() {
 	if !*isVersion && ((!*isArchive && !*isExtract) || (*isArchive && *isExtract)) {
 		Usage()
 	}
-	if *inputFile==*outputFile && len(*inputFile)!=0 {
-	    fmt.Fprintf(os.Stderr, "input and output files should not coincide\n")
+	if *inputFile == *outputFile && len(*inputFile) != 0 {
+		fmt.Fprintf(os.Stderr, "input and output files should not coincide\n")
 		os.Exit(1)
 	}
 }

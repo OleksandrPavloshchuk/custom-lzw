@@ -8,8 +8,8 @@ type dictionary struct {
 	codeSize uint
 }
 
-func createDictionary() dictionary{
-    d:=dictionary { index: make(map[string]uint), codeSize: 9 }
+func createDictionary() dictionary {
+	d := dictionary{index: make(map[string]uint), codeSize: 9}
 	for b := 0; b < 256; b++ {
 		var a [1]byte
 		a[0] = byte(b)

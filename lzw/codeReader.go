@@ -22,7 +22,7 @@ func (this *codeReader) get(codeLength uint) uint {
 }
 
 func acquireCodes(src []byte) codeReader {
-    cr := codeReader{}
+	cr := codeReader{}
 	counter := uint(0)
 	for n, b := range src {
 		if n >= HeadLen {
@@ -35,7 +35,6 @@ func acquireCodes(src []byte) codeReader {
 				d <<= 1
 			}
 		}
-	}    
-    return cr
+	}
+	return cr
 }
-

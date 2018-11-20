@@ -17,9 +17,9 @@ func (this *codeWriter) accept(code uint, length uint) {
 
 func (this *codeWriter) getBytes() []byte {
 	result := make([]byte, HeadLen)
-    if 0==this.start {
-        return result
-    }
+	if 0 == this.start {
+		return result
+	}
 	size := (this.start + 7) / 8
 	for i := 0; uint(i) < size; i++ {
 		result = append(result, this.toByte(uint(i<<3)))

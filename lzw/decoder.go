@@ -27,17 +27,17 @@ func decode(cr codeReader) []byte {
 	return result
 }
 
-func Decode(src []byte) ([]byte,error) {
-    if len(src)==0 {
-        return []byte{},nil
-    }
-	h := header{&src}	
+func Decode(src []byte) ([]byte, error) {
+	if len(src) == 0 {
+		return []byte{}, nil
+	}
+	h := header{&src}
 	if err := h.CheckPackedContent(); err != nil {
 		return nil, err
 	}
-	res:=decode(acquireCodes(src))
-	if err := h.CheckUnpackedContent(&res); err!=nil {
-	    return nil, err
+	res := decode(acquireCodes(src))
+	if err := h.CheckUnpackedContent(&res); err != nil {
+		return nil, err
 	}
 	return res, nil
 }

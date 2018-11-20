@@ -11,19 +11,19 @@ import (
 func call(transform func([]byte) ([]byte, error)) {
 	read := config.GetReader()
 	write := config.GetWriter()
-    src, err := read()
+	src, err := read()
 	if err == nil {
-	    var res []byte
-	    res, err = transform(src)
-	    if err == nil {
-	        err = write(res)
-	        if err == nil {
-				os.Exit(0)	            
-	        }
-	    }
+		var res []byte
+		res, err = transform(src)
+		if err == nil {
+			err = write(res)
+			if err == nil {
+				os.Exit(0)
+			}
+		}
 	}
-    fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
-	os.Exit(2)	
+	fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
+	os.Exit(2)
 }
 
 func main() {
