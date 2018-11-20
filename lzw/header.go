@@ -3,6 +3,7 @@ package lzw
 import (
     "crypto/md5"
     "errors"
+    "../version"
 )
 
 const HeadLen = 54
@@ -21,7 +22,7 @@ func (h *header) CheckPackedContent(version []byte) error {
 	if !h.checkSignature() {
 		return errors.New("invalid archive signature")
 	}
-	if !h.checkVersion(VersionChecker) {
+	if !h.checkVersion() {
 		return errors.New("invalid archive version")
 	}
 	if !h.checkPackedSize() {
@@ -66,8 +67,8 @@ func (h *header) setVersion(src []byte) {
     h.setArea(len(signature), src)
 }
 
-func (h *header) checkVersion(checker func(int,*[]byte) bool) bool {
-    return checker(len(signature), h.buf)
+func (h *header) checkVersion() bool {
+    return version.IsCorrect(len(signature), h.buf)
 }
 
 func (h *header) setUnpackedSize(size uint64) {

@@ -1,7 +1,5 @@
 package lzw
 
-var VersionChecker func(int,*[]byte) bool
-
 func decode(cr codeReader) []byte {
 	dict := createDictionary()
 	result := make([]byte, 0)

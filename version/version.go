@@ -6,8 +6,8 @@ import (
 
 const major = byte(0)
 const minor = byte(0)
-const patch = byte(5)
-const date = "2018-11-08"
+const patch = byte(6)
+const date = "2018-11-20"
 
 func ForHeader() []byte {
     return []byte{major,minor,patch}
