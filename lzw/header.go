@@ -18,7 +18,7 @@ type header struct {
     buf *[]byte
 }
 
-func (h *header) CheckPackedContent(version []byte) error {
+func (h *header) CheckPackedContent() error {
 	if !h.checkSignature() {
 		return errors.New("invalid archive signature")
 	}
@@ -44,10 +44,10 @@ func (h *header) CheckUnpackedContent(res *[]byte) error {
 	return nil
 }
 
-func setHeader(res *[]byte, src *[]byte, version []byte) {
+func setHeader(res *[]byte, src *[]byte) {
     h:=header{res}
 	h.setSignature()
-	h.setVersion(version)
+	h.setVersion()
 	h.setUnpackedSize(uint64(len(*src)))
 	h.setPackedSize()
 	h.setUnpackedCRC(src)
@@ -63,8 +63,8 @@ func (h *header) checkSignature() bool {
     return h.checkArea(0, signature)
 }
 
-func (h *header) setVersion(src []byte) {
-    h.setArea(len(signature), src)
+func (h *header) setVersion() {
+    h.setArea(len(signature), version.ForHeader())
 }
 
 func (h *header) checkVersion() bool {

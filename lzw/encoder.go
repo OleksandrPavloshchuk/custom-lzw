@@ -25,14 +25,14 @@ func emit(s []byte, dict dictionary, cw *codeWriter) {
 	cw.accept(dict.getIndex(s), dict.getCodeSize())
 }
 
-func Encode(src []byte, version []byte) ([]byte, error) {
+func Encode(src []byte) ([]byte, error) {
 	cw := codeWriter{}
 	encode(src, &cw)
 	res := cw.getBytes()
 	if len(res)==HeadLen {
 	    return []byte{}, nil
 	}
-	setHeader(&res, &src, version)
+	setHeader(&res, &src)
 	return res, nil
 }
 

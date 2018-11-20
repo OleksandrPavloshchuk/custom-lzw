@@ -8,12 +8,12 @@ import (
 	"os"
 )
 
-func call(transform func([]byte, []byte) ([]byte, error)) {
+func call(transform func([]byte) ([]byte, error)) {
 	read := config.GetReader()
 	write := config.GetWriter()
 
 	if src, err := read(); err == nil {
-		if res, err := transform(src, version.ForHeader()); err == nil {
+		if res, err := transform(src); err == nil {
 			if err := write(res); err == nil {
 				os.Exit(0)
 			} else {
