@@ -4,10 +4,12 @@ import (
 	"fmt"
 )
 
-const major = byte(0)
-const minor = byte(0)
-const patch = byte(6)
-const date = "2018-11-20"
+const (
+	major = byte(0)
+	minor = byte(0)
+	patch = byte(6)
+	date  = "2018-11-20"
+)
 
 func ForHeader() []byte {
 	return []byte{major, minor, patch}

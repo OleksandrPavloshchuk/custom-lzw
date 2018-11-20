@@ -10,10 +10,12 @@ const HeadLen = 54
 
 var signature = []byte{0xAA, 'r', 0xCC}
 
-const unpackedSizeOffset = 6
-const packedSizeOffset = 14
-const unpackedCrcOffset = 22
-const packedCrcOffset = 38
+const (
+	unpackedSizeOffset = 6
+	packedSizeOffset   = 14
+	unpackedCrcOffset  = 22
+	packedCrcOffset    = 38
+)
 
 type header struct {
 	buf *[]byte
