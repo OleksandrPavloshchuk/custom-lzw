@@ -20,11 +20,11 @@ func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 }
 */
 
-func Encode(src []byte) ([]byte, error) {
+func Encode(src *[]byte) (*[]byte, error) {
 
 	// TODO:
 	res := src
 
-	header.SetPackedInfo(&res)
+	header.SetPackedInfo(res)
     return res, nil
 }

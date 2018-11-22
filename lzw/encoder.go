@@ -5,13 +5,13 @@ import (
     "../header"
 )
 
-func encode(src []byte, cw *codesIO.Writer) {
-	if len(src) == 0 {
+func encode(src *[]byte, cw *codesIO.Writer) {
+	if len(*src) == 0 {
 		return
 	}
 	dict := createDictionary()
 	buf := make([]byte, 0)
-	for _, b := range src {
+	for _, b := range *src {
 		test := append(buf, b)
 		if !dict.hasString(test) {
 			emit(buf, dict, cw)
@@ -30,15 +30,15 @@ func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 	cw.Accept(dict.getIndex(s), dict.getCodeSize())
 }
 
-func Encode(src []byte) ([]byte, error) {
+func Encode(src *[]byte) (*[]byte, error) {
 	cw := codesIO.Writer{}
 	encode(src, &cw)
 	res := cw.GetBytes()
 	if len(res) == 0 {
-		return []byte{}, nil
+		return &res, nil
 	}
 	header.SetSignature()
 	header.SetVersion()
-	header.SetUnpackedInfo(&src)
-	return res, nil
+	header.SetUnpackedInfo(src)
+	return &res, nil
 }

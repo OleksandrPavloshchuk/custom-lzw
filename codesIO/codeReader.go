@@ -21,10 +21,10 @@ func (cr *Reader) Get(codeLength uint) uint {
 	return r
 }
 
-func AcquireCodes(src []byte) Reader {
+func AcquireCodes(src *[]byte) Reader {
 	cr := Reader{}
 	counter := uint(0)
-	for _, b := range src {
+	for _, b := range *src {
 		d := byte(1)
 		for i := 0; i < 8; i++ {
 			if d&b != 0 {
