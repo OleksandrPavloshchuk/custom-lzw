@@ -107,16 +107,20 @@ func checkVersion() bool {
 	return version.IsCorrect(len(signature), &s)
 }
 
-func SetUnpackedSize(src *[]byte) {
+func SetUnpackedInfo(src *[]byte) {
 	b := make([]byte, 8)
 	binary.LittleEndian.PutUint64(b, uint64(len(*src)))
 	setArea(unpackedSizeOffset, b)
+	s := md5.Sum(*src)
+	setArea(unpackedCrcOffset, s[:])
 }
 
-func SetPackedSize(src *[]byte) {
+func SetPackedInfo(src *[]byte) {
 	b := make([]byte, 8)
 	binary.LittleEndian.PutUint64(b, uint64(len(*src)))
 	setArea(packedSizeOffset, b)
+	s := md5.Sum(*src)
+	setArea(packedCrcOffset, s[:])
 }
 
 func checkUnpackedSize(src *[]byte) bool {
@@ -126,22 +130,12 @@ func checkUnpackedSize(src *[]byte) bool {
 
 func checkPackedSize(src *[]byte) bool {
 	size := uint64(binary.LittleEndian.Uint64(header[packedSizeOffset : packedSizeOffset+8]))
-	return uint64(len(*src)-len(header)) == size
-}
-
-func SetUnpackedCRC(src *[]byte) {
-	s := md5.Sum(*src)
-	setArea(unpackedCrcOffset, s[:])
+	return uint64(len(*src)) == size
 }
 
 func checkUnpackedCRC(src *[]byte) bool {
 	s := md5.Sum(*src)
 	return checkArea(unpackedCrcOffset, s[:])
-}
-
-func SetPackedCRC(src *[]byte) {
-	s := md5.Sum(*src)
-	setArea(packedCrcOffset, s[:])
 }
 
 func checkPackedCRC(src *[]byte) bool {

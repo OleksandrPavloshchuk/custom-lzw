@@ -1,11 +1,9 @@
 package static
 
-/*
 import (
-    "../../codesIO"
+//    "../../codesIO"
     "../../header"
 )
-*/
 
 // TODO replace it by static Huffman's encoding
 
@@ -24,6 +22,9 @@ func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 
 func Encode(src []byte) ([]byte, error) {
 
-    // TODO
-    return src, nil
+	// TODO:
+	res := src
+
+	header.SetPackedInfo(&res)
+    return res, nil
 }

@@ -1,11 +1,9 @@
 package static
 
-/*
 import (
-    "../../codesIO"
+//    "../../codesIO"
     "../../header"
 )
-*/
 
 // TODO replace it by static Huffman's encoding
 
@@ -19,6 +17,16 @@ func Decode(src []byte) ([]byte, error) {
 	if len(src) == 0 {
 		return []byte{}, nil
 	}
+	header.Fill(&src)
+
+	content := src[header.GetLength():]
+
+	if err := header.CheckPackedContent(&content); err != nil {
+		return nil, err
+	}
+	
 	// TODO
-	return src, nil
+	res := content
+	
+	return res, nil
 }

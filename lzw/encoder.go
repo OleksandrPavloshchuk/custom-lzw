@@ -39,9 +39,6 @@ func Encode(src []byte) ([]byte, error) {
 	}
 	header.SetSignature()
 	header.SetVersion()
-	header.SetUnpackedSize(&src)
-	header.SetUnpackedCRC(&src)
-	header.SetPackedSize(&res)
-	header.SetUnpackedCRC(&res)
+	header.SetUnpackedInfo(&src)
 	return res, nil
 }
