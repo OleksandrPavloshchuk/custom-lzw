@@ -31,7 +31,7 @@ func Fill(src *[]byte) {
 }
 
 func AddHeader(src *[]byte) *[]byte {
-    r := make([]byte,GetLength())
+    r := make([]byte,0)
     r = append( r, header[:]... )
     r = append( r, *src... )
     return &r
@@ -126,7 +126,7 @@ func checkUnpackedSize(src *[]byte) bool {
 
 func checkPackedSize(src *[]byte) bool {
 	size := uint64(binary.LittleEndian.Uint64(header[packedSizeOffset : packedSizeOffset+8]))
-	return uint64(len(*src)) == size
+	return uint64(len(*src)-len(header)) == size
 }
 
 func SetUnpackedCRC(src *[]byte) {
