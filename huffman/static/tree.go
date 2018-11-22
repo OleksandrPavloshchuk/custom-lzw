@@ -98,8 +98,7 @@ func (h hTree) fillCodes(i hItem, code uint64, m *map[string]uint64) {
         (*m)[i.val]=code
     } else {
         for i,v := range i.children {
-            c := h[v]
-            h.fillCodes( c, (code << 1) | uint64(i), m)
+            h.fillCodes( h[v], (code << 1) | uint64(i), m)
         }
     }
 }

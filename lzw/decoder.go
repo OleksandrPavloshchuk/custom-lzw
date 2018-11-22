@@ -2,6 +2,7 @@ package lzw
 
 import (
     "../codesIO"
+    "../header"
 )
 
 func decode(cr codesIO.Reader) []byte {
@@ -35,11 +36,11 @@ func Decode(src []byte) ([]byte, error) {
 	if len(src) == 0 {
 		return []byte{}, nil
 	}
-	h := header{&src}
+	h := header.GetHeader(&src)
 	if err := h.CheckPackedContent(); err != nil {
 		return nil, err
 	}
-	res := decode(codesIO.AcquireCodes(src, HeadLen))
+	res := decode(codesIO.AcquireCodes(src, header.Length))
 	if err := h.CheckUnpackedContent(&res); err != nil {
 		return nil, err
 	}

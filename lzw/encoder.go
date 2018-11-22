@@ -2,6 +2,7 @@ package lzw
 
 import (
     "../codesIO"
+    "../header"
 )
 
 func encode(src []byte, cw *codesIO.Writer) {
@@ -32,10 +33,10 @@ func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 func Encode(src []byte) ([]byte, error) {
 	cw := codesIO.Writer{}
 	encode(src, &cw)
-	res := cw.GetBytes(HeadLen)
-	if len(res) == HeadLen {
+	res := cw.GetBytes(header.Length)
+	if len(res) == header.Length {
 		return []byte{}, nil
 	}
-	setHeader(&res, &src)
+	header.SetHeader(&res, &src)
 	return res, nil
 }
