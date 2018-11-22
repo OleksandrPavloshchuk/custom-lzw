@@ -1,10 +1,10 @@
 package codesIO
 
-type CodeWriter struct {
+type Writer struct {
 	codeIO
 }
 
-func (cw *CodeWriter) Accept(code uint, length uint) {
+func (cw *Writer) Accept(code uint, length uint) {
 	d := uint(1)
 	for i := uint(0); i < length; i++ {
 		if code&d != 0 {
@@ -15,7 +15,7 @@ func (cw *CodeWriter) Accept(code uint, length uint) {
 	}
 }
 
-func (cw *CodeWriter) GetBytes(offset int) []byte {
+func (cw *Writer) GetBytes(offset int) []byte {
 	result := make([]byte, offset)
 	if 0 == cw.start {
 		return result
@@ -27,7 +27,7 @@ func (cw *CodeWriter) GetBytes(offset int) []byte {
 	return result
 }
 
-func (cw *CodeWriter) toByte(offset uint) byte {
+func (cw *Writer) toByte(offset uint) byte {
 	r := byte(0)
 	d := byte(1)
 	for i := 0; i < 8; i++ {

@@ -4,7 +4,7 @@ import (
     "../codesIO"
 )
 
-func decode(cr codesIO.CodeReader) []byte {
+func decode(cr codesIO.Reader) []byte {
 	dict := createDictionary()
 	result := make([]byte, 0)
 	buf := make([]byte, 0)

@@ -1,14 +1,14 @@
 package codesIO
 
-type CodeReader struct {
+type Reader struct {
 	codeIO
 }
 
-func (cr *CodeReader) HasCodes() bool {
+func (cr *Reader) HasCodes() bool {
 	return cr.start <= cr.bitSet.length()
 }
 
-func (cr *CodeReader) Get(codeLength uint) uint {
+func (cr *Reader) Get(codeLength uint) uint {
 	r := uint(0)
 	d := uint(1)
 	for i := uint(0); i < codeLength; i++ {
@@ -21,8 +21,8 @@ func (cr *CodeReader) Get(codeLength uint) uint {
 	return r
 }
 
-func AcquireCodes(src []byte, offset int) CodeReader {
-	cr := CodeReader{}
+func AcquireCodes(src []byte, offset int) Reader {
+	cr := Reader{}
 	counter := uint(0)
 	for n, b := range src {
 		if n >= offset {

@@ -4,7 +4,7 @@ import (
     "../codesIO"
 )
 
-func encode(src []byte, cw *codesIO.CodeWriter) {
+func encode(src []byte, cw *codesIO.Writer) {
 	if len(src) == 0 {
 		return
 	}
@@ -25,12 +25,12 @@ func encode(src []byte, cw *codesIO.CodeWriter) {
 	emit(buf, dict, cw)
 }
 
-func emit(s []byte, dict dictionary, cw *codesIO.CodeWriter) {
+func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 	cw.Accept(dict.getIndex(s), dict.getCodeSize())
 }
 
 func Encode(src []byte) ([]byte, error) {
-	cw := codesIO.CodeWriter{}
+	cw := codesIO.Writer{}
 	encode(src, &cw)
 	res := cw.GetBytes(HeadLen)
 	if len(res) == HeadLen {
