@@ -1,11 +1,15 @@
 package lzw
 
-func decode(cr codeReader) []byte {
+import (
+    "../codesIO"
+)
+
+func decode(cr codesIO.CodeReader) []byte {
 	dict := createDictionary()
 	result := make([]byte, 0)
 	buf := make([]byte, 0)
-	for cr.hasCodes() {
-		i := cr.get(dict.getCodeSize())
+	for cr.HasCodes() {
+		i := cr.Get(dict.getCodeSize())
 		if !dict.incrementCodeSizeWhileDecode(i) {
 			var s []byte
 			if dict.hasCode(i) {
@@ -35,7 +39,7 @@ func Decode(src []byte) ([]byte, error) {
 	if err := h.CheckPackedContent(); err != nil {
 		return nil, err
 	}
-	res := decode(acquireCodes(src))
+	res := decode(codesIO.AcquireCodes(src, HeadLen))
 	if err := h.CheckUnpackedContent(&res); err != nil {
 		return nil, err
 	}

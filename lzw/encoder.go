@@ -1,6 +1,10 @@
 package lzw
 
-func encode(src []byte, cw *codeWriter) {
+import (
+    "../codesIO"
+)
+
+func encode(src []byte, cw *codesIO.CodeWriter) {
 	if len(src) == 0 {
 		return
 	}
@@ -12,7 +16,7 @@ func encode(src []byte, cw *codeWriter) {
 			emit(buf, dict, cw)
 			dict.put(test)
 			if dict.incrementCodeSizeWhileEncode() {
-				cw.accept(IncrementCodeSize, dict.getCodeSize()-1)
+				cw.Accept(IncrementCodeSize, dict.getCodeSize()-1)
 			}
 			buf = make([]byte, 0)
 		}
@@ -21,14 +25,14 @@ func encode(src []byte, cw *codeWriter) {
 	emit(buf, dict, cw)
 }
 
-func emit(s []byte, dict dictionary, cw *codeWriter) {
-	cw.accept(dict.getIndex(s), dict.getCodeSize())
+func emit(s []byte, dict dictionary, cw *codesIO.CodeWriter) {
+	cw.Accept(dict.getIndex(s), dict.getCodeSize())
 }
 
 func Encode(src []byte) ([]byte, error) {
-	cw := codeWriter{}
+	cw := codesIO.CodeWriter{}
 	encode(src, &cw)
-	res := cw.getBytes()
+	res := cw.GetBytes(HeadLen)
 	if len(res) == HeadLen {
 		return []byte{}, nil
 	}
