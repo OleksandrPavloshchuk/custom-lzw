@@ -33,7 +33,7 @@ func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 func Encode(src []byte) ([]byte, error) {
 	cw := codesIO.Writer{}
 	encode(src, &cw)
-	res := cw.GetBytes(0)
+	res := cw.GetBytes()
 	if len(res) == 0 {
 		return []byte{}, nil
 	}

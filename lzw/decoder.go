@@ -36,7 +36,7 @@ func Decode(src []byte) ([]byte, error) {
 	if len(src) == 0 {
 		return []byte{}, nil
 	}
-	res := decode(codesIO.AcquireCodes(src, 0))
+	res := decode(codesIO.AcquireCodes(src))
 	if err := header.CheckUnpackedContent(&res); err != nil {
 		return nil, err
 	}

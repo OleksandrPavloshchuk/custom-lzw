@@ -21,19 +21,17 @@ func (cr *Reader) Get(codeLength uint) uint {
 	return r
 }
 
-func AcquireCodes(src []byte, offset int) Reader {
+func AcquireCodes(src []byte) Reader {
 	cr := Reader{}
 	counter := uint(0)
-	for n, b := range src {
-		if n >= offset {
-			d := byte(1)
-			for i := 0; i < 8; i++ {
-				if d&b != 0 {
-					cr.bitSet.set(counter)
-				}
-				counter++
-				d <<= 1
+	for _, b := range src {
+		d := byte(1)
+		for i := 0; i < 8; i++ {
+			if d&b != 0 {
+				cr.bitSet.set(counter)
 			}
+			counter++
+			d <<= 1
 		}
 	}
 	return cr

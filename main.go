@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func call(transforms []func([]byte) ([]byte, error)) {
+func call(transforms []func([]byte) ([]byte, error), doAddHeader bool) {
 	src, err := config.GetReader()()
 	if err == nil {
 		res := src
@@ -19,9 +19,14 @@ func call(transforms []func([]byte) ([]byte, error)) {
 			if err != nil {
 				break
 			}
-		}		
+		}
 		if err == nil {
-		    withHeader := header.AddHeader(&res)
+			var withHeader *[]byte
+			if doAddHeader {
+				withHeader = header.AddHeader(&res)
+			} else {
+				withHeader = &res
+			}
 			err = config.GetWriter()(*withHeader)
 			if err == nil {
 				os.Exit(0)
@@ -42,9 +47,9 @@ func main() {
 	case config.Version:
 		version.Print()
 	case config.Archive:
-		call([]func([]byte) ([]byte, error){lzw.Encode, static.Encode})
+		call([]func([]byte) ([]byte, error){lzw.Encode, static.Encode}, true)
 	case config.Extract:
-		call([]func([]byte) ([]byte, error){static.Decode, lzw.Decode})
+		call([]func([]byte) ([]byte, error){static.Decode, lzw.Decode}, false)
 	case config.PrintHeader:
 		if h, err := config.GetHeaderReader()(); err != nil {
 			printError(err)
