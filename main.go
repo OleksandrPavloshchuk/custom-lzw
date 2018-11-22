@@ -10,12 +10,13 @@ import (
 	"os"
 )
 
-func call(transforms []func([]byte) ([]byte, error)) {
+func call(transforms []func([]byte,uint64) ([]byte, error)) {
 	src, err := config.GetReader()()
 	if err == nil {
 		res := src
+		sourceSize := uint64(len(src))
 		for _, t := range transforms {
-			res, err = t(res)
+			res, err = t(res, sourceSize)
 			if err != nil {
 				break
 			}
@@ -41,9 +42,9 @@ func main() {
 	case config.Version:
 		version.Print()
 	case config.Archive:
-		call([]func([]byte) ([]byte, error){lzw.Encode, static.Encode})
+		call([]func([]byte,uint64) ([]byte, error){lzw.Encode, static.Encode})
 	case config.Extract:
-		call([]func([]byte) ([]byte, error){static.Decode, lzw.Decode})
+		call([]func([]byte,uint64) ([]byte, error){static.Decode, lzw.Decode})
 	case config.PrintHeader:
 		if h, err := config.GetHeaderReader()(); err != nil {
 			printError(err)

@@ -30,13 +30,13 @@ func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 	cw.Accept(dict.getIndex(s), dict.getCodeSize())
 }
 
-func Encode(src []byte) ([]byte, error) {
+func Encode(src []byte, sourceSize uint64) ([]byte, error) {
 	cw := codesIO.Writer{}
 	encode(src, &cw)
 	res := cw.GetBytes(header.Length)
 	if len(res) == header.Length {
 		return []byte{}, nil
 	}
-	header.SetHeader(&res, &src)
+	header.SetHeader(&res, &src, sourceSize)
 	return res, nil
 }

@@ -51,24 +51,6 @@ func Print(h []byte) {
 	fmt.Printf("\n")
 }
 
-func toString(n uint64) string {
-    src := []byte(fmt.Sprintf("%v",n))
-    r := ""
-    for i:=len(src)-1;i>=0;i-- {
-        r = string(src[i]) + r
-        if (len(src)-i) % 3 == 0 {
-            r = " " + r
-        }
-    }
-    return strings.Trim(r, " ")
-}
-
-func printHex(b []byte) {
-    for _,v := range b {
-        fmt.Printf("%02x ", v)
-    }
-}
-
 func GetHeader(src *[]byte) Header {
 	return Header{buf: src}
 }
@@ -99,11 +81,11 @@ func (h *Header) CheckUnpackedContent(res *[]byte) error {
 	return nil
 }
 
-func SetHeader(res *[]byte, src *[]byte) {
+func SetHeader(res *[]byte, src *[]byte, sourceSize uint64) {
 	h := Header{res}
 	h.setSignature()
 	h.setVersion()
-	h.setUnpackedSize(uint64(len(*src)))
+	h.setUnpackedSize(sourceSize)
 	h.setPackedSize()
 	h.setUnpackedCRC(src)
 	h.setPackedCRC()
@@ -181,3 +163,23 @@ func (h *Header) checkArea(offset int, src []byte) bool {
 	}
 	return true
 }
+
+func toString(n uint64) string {
+    src := []byte(fmt.Sprintf("%v",n))
+    r := ""
+    for i:=len(src)-1;i>=0;i-- {
+        r = string(src[i]) + r
+        if (len(src)-i) % 3 == 0 {
+            r = " " + r
+        }
+    }
+    return strings.Trim(r, " ")
+}
+
+func printHex(b []byte) {
+    for _,v := range b {
+        fmt.Printf("%02x ", v)
+    }
+}
+
+

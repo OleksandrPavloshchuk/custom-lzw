@@ -32,7 +32,7 @@ func decode(cr codesIO.Reader) []byte {
 	return result
 }
 
-func Decode(src []byte) ([]byte, error) {
+func Decode(src []byte, _ uint64) ([]byte, error) {
 	if len(src) == 0 {
 		return []byte{}, nil
 	}
