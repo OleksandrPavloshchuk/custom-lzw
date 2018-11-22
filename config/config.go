@@ -53,7 +53,7 @@ func GetHeaderReader() func() ([]byte, error) {
         if f, err := os.Open(*inputFile); err != nil {
             return nil, err
         } else {
-    	    r := make([]byte, header.Length)
+    	    r := make([]byte, header.GetLength())
     	    if _, err := io.ReadFull(f, r); err!=nil {
     	        return nil, err
     	    } else {

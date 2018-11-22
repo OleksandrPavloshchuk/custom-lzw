@@ -22,7 +22,8 @@ func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 }
 */
 
-func Encode(src []byte, _ uint64) ([]byte, error) {
+func Encode(src []byte) ([]byte, error) {
+
     // TODO
     return src, nil
 }

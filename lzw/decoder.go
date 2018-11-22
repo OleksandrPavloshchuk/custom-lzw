@@ -32,16 +32,16 @@ func decode(cr codesIO.Reader) []byte {
 	return result
 }
 
-func Decode(src []byte, _ uint64) ([]byte, error) {
+func Decode(src []byte) ([]byte, error) {
 	if len(src) == 0 {
 		return []byte{}, nil
 	}
-	h := header.GetHeader(&src)
-	if err := h.CheckPackedContent(); err != nil {
+	header.Fill(&src)
+	if err := header.CheckPackedContent(&src); err != nil {
 		return nil, err
 	}
-	res := decode(codesIO.AcquireCodes(src, header.Length))
-	if err := h.CheckUnpackedContent(&res); err != nil {
+	res := decode(codesIO.AcquireCodes(src, 0))
+	if err := header.CheckUnpackedContent(&res); err != nil {
 		return nil, err
 	}
 	return res, nil

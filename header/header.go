@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-const Length = 54
-
 var signature = []byte{0xAA, 'r', 0xCC}
 
 const (
@@ -20,8 +18,23 @@ const (
 	packedCrcOffset    = 38
 )
 
-type Header struct {
-	buf *[]byte
+var header [54]byte
+
+func GetLength() int {
+    return len(header)
+}
+
+func Fill(src *[]byte) {
+    for i:=0; i<len(header); i++ {
+        header[i] = (*src)[i]
+    }
+}
+
+func AddHeader(src *[]byte) *[]byte {
+    r := make([]byte,GetLength())
+    r = append( r, header[:]... )
+    r = append( r, *src... )
+    return &r
 }
 
 func Print(h []byte) {
@@ -47,117 +60,104 @@ func Print(h []byte) {
 	fmt.Printf("- unpacked CRC:  ")
 	printHex( h[unpackedCrcOffset:packedCrcOffset])
 	fmt.Printf("\n- packed CRC:    ")
-	printHex( h[packedCrcOffset:Length])
+	printHex( h[packedCrcOffset:len(header)])
 	fmt.Printf("\n")
 }
 
-func GetHeader(src *[]byte) Header {
-	return Header{buf: src}
-}
-
-func (h *Header) CheckPackedContent() error {
-	if !h.checkSignature() {
+func CheckPackedContent(src *[]byte) error {
+	if !checkSignature() {
 		return errors.New("invalid archive signature")
 	}
-	if !h.checkVersion() {
+	if !checkVersion() {
 		return errors.New("invalid archive version")
 	}
-	if !h.checkPackedSize() {
+	if !checkPackedSize(src) {
 		return errors.New("invalid packed content size")
 	}
-	if !h.checkPackedCRC() {
+	if !checkPackedCRC(src) {
 		return errors.New("invalid packed CRC")
 	}
 	return nil
 }
 
-func (h *Header) CheckUnpackedContent(res *[]byte) error {
-	if !h.checkUnpackedSize(uint64(len(*res))) {
+func CheckUnpackedContent(src *[]byte) error {
+	if !checkUnpackedSize(src) {
 		return errors.New("invalid unpacked content size")
 	}
-	if !h.checkUnpackedCRC(res) {
+	if !checkUnpackedCRC(src) {
 		return errors.New("invalid unpacked content CRC")
 	}
 	return nil
 }
 
-func SetHeader(res *[]byte, src *[]byte, sourceSize uint64) {
-	h := Header{res}
-	h.setSignature()
-	h.setVersion()
-	h.setUnpackedSize(sourceSize)
-	h.setPackedSize()
-	h.setUnpackedCRC(src)
-	h.setPackedCRC()
+func SetSignature() {
+	setArea(0, signature)
 }
 
-func (h *Header) setSignature() {
-	h.setArea(0, signature)
+func checkSignature() bool {
+	return checkArea(0, signature)
 }
 
-func (h *Header) checkSignature() bool {
-	return h.checkArea(0, signature)
+func SetVersion() {
+	setArea(len(signature), version.ForHeader())
 }
 
-func (h *Header) setVersion() {
-	h.setArea(len(signature), version.ForHeader())
+func checkVersion() bool {
+    s := header[:]
+	return version.IsCorrect(len(signature), &s)
 }
 
-func (h *Header) checkVersion() bool {
-	return version.IsCorrect(len(signature), h.buf)
-}
-
-func (h *Header) setUnpackedSize(size uint64) {
+func SetUnpackedSize(src *[]byte) {
 	b := make([]byte, 8)
-	binary.LittleEndian.PutUint64(b, size)
-	h.setArea(unpackedSizeOffset, b)
+	binary.LittleEndian.PutUint64(b, uint64(len(*src)))
+	setArea(unpackedSizeOffset, b)
 }
 
-func (h *Header) setPackedSize() {
+func SetPackedSize(src *[]byte) {
 	b := make([]byte, 8)
-	binary.LittleEndian.PutUint64(b, uint64(len(*h.buf)-Length))
-	h.setArea(packedSizeOffset, b)
+	binary.LittleEndian.PutUint64(b, uint64(len(*src)))
+	setArea(packedSizeOffset, b)
 }
 
-func (h *Header) checkUnpackedSize(size uint64) bool {
-	toCheck := uint64(binary.LittleEndian.Uint64((*h.buf)[unpackedSizeOffset : unpackedSizeOffset+8]))
-	return size == toCheck
+func checkUnpackedSize(src *[]byte) bool {
+	toCheck := uint64(binary.LittleEndian.Uint64(header[unpackedSizeOffset : unpackedSizeOffset+8]))
+	return uint64(len(*src)) == toCheck
 }
 
-func (h *Header) checkPackedSize() bool {
-	size := uint64(binary.LittleEndian.Uint64((*h.buf)[packedSizeOffset : packedSizeOffset+8]))
-	return uint64(len(*h.buf)-Length) == size
+func checkPackedSize(src *[]byte) bool {
+	size := uint64(binary.LittleEndian.Uint64(header[packedSizeOffset : packedSizeOffset+8]))
+	return uint64(len(*src)) == size
 }
 
-func (h *Header) setUnpackedCRC(src *[]byte) {
+func SetUnpackedCRC(src *[]byte) {
 	s := md5.Sum(*src)
-	h.setArea(unpackedCrcOffset, s[:])
+	setArea(unpackedCrcOffset, s[:])
 }
 
-func (h *Header) checkUnpackedCRC(src *[]byte) bool {
+func checkUnpackedCRC(src *[]byte) bool {
 	s := md5.Sum(*src)
-	return h.checkArea(unpackedCrcOffset, s[:])
+	return checkArea(unpackedCrcOffset, s[:])
 }
 
-func (h *Header) setPackedCRC() {
-	s := md5.Sum((*h.buf)[Length:])
-	h.setArea(packedCrcOffset, s[:])
+func SetPackedCRC(src *[]byte) {
+	s := md5.Sum(*src)
+	setArea(packedCrcOffset, s[:])
 }
 
-func (h *Header) checkPackedCRC() bool {
-	s := md5.Sum((*h.buf)[Length:])
-	return h.checkArea(packedCrcOffset, s[:])
+func checkPackedCRC(src *[]byte) bool {
+	s := md5.Sum(*src)
+	return checkArea(packedCrcOffset, s[:])
 }
 
-func (h *Header) setArea(offset int, src []byte) {
+func setArea(offset int, src []byte) {
 	for i := 0; i < len(src); i++ {
-		(*h.buf)[offset+i] = src[i]
+		header[offset+i] = src[i]
 	}
 }
 
-func (h *Header) checkArea(offset int, src []byte) bool {
+func checkArea(offset int, src []byte) bool {
 	for i := 0; i < len(src); i++ {
-		if (*h.buf)[offset+i] != src[i] {
+		if header[offset+i] != src[i] {
 			return false
 		}
 	}
