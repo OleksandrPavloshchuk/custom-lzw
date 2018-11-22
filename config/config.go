@@ -1,29 +1,29 @@
 package config
 
 import (
+	"../header"
 	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
-	"../header"
 )
 
 type Mode int
 
 const (
-	Version = iota
-	Archive = iota
-	Extract = iota
+	Version     = iota
+	Archive     = iota
+	Extract     = iota
 	PrintHeader = iota
 )
 
 var (
-	inputFile  *string
-	outputFile *string
-	isVersion  *bool
-	isArchive  *bool
-	isExtract  *bool
+	inputFile     *string
+	outputFile    *string
+	isVersion     *bool
+	isArchive     *bool
+	isExtract     *bool
 	isPrintHeader *bool
 )
 
@@ -49,18 +49,18 @@ func GetReader() func() ([]byte, error) {
 }
 
 func GetHeaderReader() func() ([]byte, error) {
-    return func() ([]byte, error) {
-        if f, err := os.Open(*inputFile); err != nil {
-            return nil, err
-        } else {
-    	    r := make([]byte, header.GetLength())
-    	    if _, err := io.ReadFull(f, r); err!=nil {
-    	        return nil, err
-    	    } else {
-    	        return r, nil
-    	    }
-    	}
-    }
+	return func() ([]byte, error) {
+		if f, err := os.Open(*inputFile); err != nil {
+			return nil, err
+		} else {
+			r := make([]byte, header.GetLength())
+			if _, err := io.ReadFull(f, r); err != nil {
+				return nil, err
+			} else {
+				return r, nil
+			}
+		}
+	}
 }
 
 func GetWriter() func([]byte) error {
@@ -81,7 +81,7 @@ func GetMode() Mode {
 		return Version
 	}
 	if *isPrintHeader {
-	    return PrintHeader
+		return PrintHeader
 	}
 	if *isArchive {
 		return Archive
@@ -102,7 +102,7 @@ func Acquire() {
 	isVersion = flag.Bool("v", false, "print version")
 	isPrintHeader = flag.Bool("printHeader", false, "print header of archive")
 	inputFile = flag.String("in", "", "input file name")
-	outputFile = flag.String("out", "", "output file name")	
+	outputFile = flag.String("out", "", "output file name")
 	flag.Parse()
 	if !flag.Parsed() {
 		Usage()
@@ -116,6 +116,6 @@ func Acquire() {
 	}
 	if *isPrintHeader && len(*inputFile) == 0 {
 		fmt.Fprintf(os.Stderr, "no input file\n")
-		os.Exit(1)	    
+		os.Exit(1)
 	}
 }

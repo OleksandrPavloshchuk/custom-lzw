@@ -1,8 +1,8 @@
 package static
 
 import (
-//    "../../codesIO"
-    "../../header"
+	//    "../../codesIO"
+	"../../header"
 )
 
 // TODO replace it by static Huffman's encoding
@@ -26,5 +26,5 @@ func Encode(src *[]byte) (*[]byte, error) {
 	res := src
 
 	header.SetPackedInfo(res)
-    return res, nil
+	return res, nil
 }

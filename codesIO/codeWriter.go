@@ -16,7 +16,7 @@ func (cw *Writer) Accept(code uint, length uint) {
 }
 
 func (cw *Writer) GetBytes() []byte {
-	result := make([]byte,0)
+	result := make([]byte, 0)
 	if 0 == cw.start {
 		return result
 	}

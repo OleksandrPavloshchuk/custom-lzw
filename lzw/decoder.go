@@ -1,8 +1,8 @@
 package lzw
 
 import (
-    "../codesIO"
-    "../header"
+	"../codesIO"
+	"../header"
 )
 
 func decode(cr codesIO.Reader) []byte {

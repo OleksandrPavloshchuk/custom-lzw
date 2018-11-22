@@ -21,46 +21,46 @@ const (
 var header [54]byte
 
 func GetLength() int {
-    return len(header)
+	return len(header)
 }
 
 func Fill(src *[]byte) {
-    for i:=0; i<len(header); i++ {
-        header[i] = (*src)[i]
-    }
+	for i := 0; i < len(header); i++ {
+		header[i] = (*src)[i]
+	}
 }
 
 func AddHeader(src *[]byte) *[]byte {
-    r := make([]byte,0)
-    r = append( r, header[:]... )
-    r = append( r, *src... )
-    return &r
+	r := make([]byte, 0)
+	r = append(r, header[:]...)
+	r = append(r, *src...)
+	return &r
 }
 
 func Print(h []byte) {
 	fmt.Printf("Archive header:\n")
 	fmt.Printf("- signature:     ")
-	printHex( h[:3])
+	printHex(h[:3])
 	fmt.Printf("\n- version:       %v.%v.%v\n", h[3], h[4], h[5])
-	
+
 	nu := uint64(binary.LittleEndian.Uint64(h[unpackedSizeOffset:packedSizeOffset]))
 	unpackedSize := toString(nu)
 	np := uint64(binary.LittleEndian.Uint64(h[packedSizeOffset:unpackedCrcOffset]))
 	packedSize := toString(np)
-	
+
 	fieldWidth := len(unpackedSize)
 	if len(packedSize) > fieldWidth {
-	    fieldWidth = len(packedSize)
+		fieldWidth = len(packedSize)
 	}
-	f := fmt.Sprintf("- unpacked size: %v%vs\n", "%", fieldWidth)		
-	fmt.Printf(f, unpackedSize)	
-	f = fmt.Sprintf("- packed size:   %s%vs (%s.2f%s)\n", "%", fieldWidth, "%", "%s")	
-	fmt.Printf(f, packedSize, float32(np)/float32(nu)*100.0,"%")
-		
+	f := fmt.Sprintf("- unpacked size: %v%vs\n", "%", fieldWidth)
+	fmt.Printf(f, unpackedSize)
+	f = fmt.Sprintf("- packed size:   %s%vs (%s.2f%s)\n", "%", fieldWidth, "%", "%s")
+	fmt.Printf(f, packedSize, float32(np)/float32(nu)*100.0, "%")
+
 	fmt.Printf("- unpacked CRC:  ")
-	printHex( h[unpackedCrcOffset:packedCrcOffset])
+	printHex(h[unpackedCrcOffset:packedCrcOffset])
 	fmt.Printf("\n- packed CRC:    ")
-	printHex( h[packedCrcOffset:len(header)])
+	printHex(h[packedCrcOffset:len(header)])
 	fmt.Printf("\n")
 }
 
@@ -103,7 +103,7 @@ func SetVersion() {
 }
 
 func checkVersion() bool {
-    s := header[:]
+	s := header[:]
 	return version.IsCorrect(len(signature), &s)
 }
 
@@ -159,21 +159,19 @@ func checkArea(offset int, src []byte) bool {
 }
 
 func toString(n uint64) string {
-    src := []byte(fmt.Sprintf("%v",n))
-    r := ""
-    for i:=len(src)-1;i>=0;i-- {
-        r = string(src[i]) + r
-        if (len(src)-i) % 3 == 0 {
-            r = " " + r
-        }
-    }
-    return strings.Trim(r, " ")
+	src := []byte(fmt.Sprintf("%v", n))
+	r := ""
+	for i := len(src) - 1; i >= 0; i-- {
+		r = string(src[i]) + r
+		if (len(src)-i)%3 == 0 {
+			r = " " + r
+		}
+	}
+	return strings.Trim(r, " ")
 }
 
 func printHex(b []byte) {
-    for _,v := range b {
-        fmt.Printf("%02x ", v)
-    }
+	for _, v := range b {
+		fmt.Printf("%02x ", v)
+	}
 }
-
-

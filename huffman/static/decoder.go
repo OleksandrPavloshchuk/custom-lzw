@@ -1,8 +1,8 @@
 package static
 
 import (
-//    "../../codesIO"
-    "../../header"
+	//    "../../codesIO"
+	"../../header"
 )
 
 // TODO replace it by static Huffman's encoding
@@ -13,7 +13,7 @@ func decode(cr codesIO.Reader) []byte {
 }
 */
 
-func Decode(src *[]byte) (*[]byte, error) {    
+func Decode(src *[]byte) (*[]byte, error) {
 	if len(*src) == 0 {
 		res := []byte{}
 		return &res, nil
@@ -25,9 +25,9 @@ func Decode(src *[]byte) (*[]byte, error) {
 	if err := header.CheckPackedContent(&content); err != nil {
 		return nil, err
 	}
-	
+
 	// TODO
 	res := &content
-	
+
 	return res, nil
 }

@@ -1,8 +1,8 @@
 package lzw
 
 import (
-    "../codesIO"
-    "../header"
+	"../codesIO"
+	"../header"
 )
 
 func encode(src *[]byte, cw *codesIO.Writer) {
