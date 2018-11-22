@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"../header"
 )
 
 type Mode int
@@ -14,6 +15,7 @@ const (
 	Version = iota
 	Archive = iota
 	Extract = iota
+	PrintHeader = iota
 )
 
 var (
@@ -22,6 +24,7 @@ var (
 	isVersion  *bool
 	isArchive  *bool
 	isExtract  *bool
+	isPrintHeader *bool
 )
 
 func GetReader() func() ([]byte, error) {
@@ -45,6 +48,21 @@ func GetReader() func() ([]byte, error) {
 	}
 }
 
+func GetHeaderReader() func() ([]byte, error) {
+    return func() ([]byte, error) {
+        if f, err := os.Open(*inputFile); err != nil {
+            return nil, err
+        } else {
+    	    r := make([]byte, header.Length)
+    	    if _, err := io.ReadFull(f, r); err!=nil {
+    	        return nil, err
+    	    } else {
+    	        return r, nil
+    	    }
+    	}
+    }
+}
+
 func GetWriter() func([]byte) error {
 	if len(*outputFile) != 0 {
 		return func(data []byte) error {
@@ -61,6 +79,9 @@ func GetWriter() func([]byte) error {
 func GetMode() Mode {
 	if *isVersion {
 		return Version
+	}
+	if *isPrintHeader {
+	    return PrintHeader
 	}
 	if *isArchive {
 		return Archive
@@ -79,17 +100,22 @@ func Acquire() {
 	isArchive = flag.Bool("a", false, "archive file")
 	isExtract = flag.Bool("e", false, "extract file")
 	isVersion = flag.Bool("v", false, "print version")
+	isPrintHeader = flag.Bool("printHeader", false, "print header of archive")
 	inputFile = flag.String("in", "", "input file name")
-	outputFile = flag.String("out", "", "output file name")
+	outputFile = flag.String("out", "", "output file name")	
 	flag.Parse()
 	if !flag.Parsed() {
 		Usage()
 	}
-	if !*isVersion && ((!*isArchive && !*isExtract) || (*isArchive && *isExtract)) {
+	if !*isVersion && !*isPrintHeader && ((!*isArchive && !*isExtract) || (*isArchive && *isExtract)) {
 		Usage()
 	}
 	if *inputFile == *outputFile && len(*inputFile) != 0 {
 		fmt.Fprintf(os.Stderr, "input and output files should not coincide\n")
 		os.Exit(1)
+	}
+	if *isPrintHeader && len(*inputFile) == 0 {
+		fmt.Fprintf(os.Stderr, "no input file\n")
+		os.Exit(1)	    
 	}
 }

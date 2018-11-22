@@ -3,8 +3,10 @@ package header
 import (
 	"../version"
 	"crypto/md5"
-	"errors"
 	"encoding/binary"
+	"errors"
+	"fmt"
+	"strings"
 )
 
 const Length = 54
@@ -22,8 +24,53 @@ type Header struct {
 	buf *[]byte
 }
 
+func Print(h []byte) {
+	fmt.Printf("Archive header:\n")
+	fmt.Printf("- signature:     ")
+	printHex( h[:3])
+	fmt.Printf("\n- version:       %v.%v.%v\n", h[3], h[4], h[5])
+	
+	nu := uint64(binary.LittleEndian.Uint64(h[unpackedSizeOffset:packedSizeOffset]))
+	unpackedSize := toString(nu)
+	np := uint64(binary.LittleEndian.Uint64(h[packedSizeOffset:unpackedCrcOffset]))
+	packedSize := toString(np)
+	
+	fieldWidth := len(unpackedSize)
+	if len(packedSize) > fieldWidth {
+	    fieldWidth = len(packedSize)
+	}
+	f := fmt.Sprintf("- unpacked size: %v%vs\n", "%", fieldWidth)		
+	fmt.Printf(f, unpackedSize)	
+	f = fmt.Sprintf("- packed size:   %s%vs (%s.2f%s)\n", "%", fieldWidth, "%", "%s")	
+	fmt.Printf(f, packedSize, float32(np)/float32(nu)*100.0,"%")
+		
+	fmt.Printf("- unpacked CRC:  ")
+	printHex( h[unpackedCrcOffset:packedCrcOffset])
+	fmt.Printf("\n- packed CRC:    ")
+	printHex( h[packedCrcOffset:Length])
+	fmt.Printf("\n")
+}
+
+func toString(n uint64) string {
+    src := []byte(fmt.Sprintf("%v",n))
+    r := ""
+    for i:=len(src)-1;i>=0;i-- {
+        r = string(src[i]) + r
+        if (len(src)-i) % 3 == 0 {
+            r = " " + r
+        }
+    }
+    return strings.Trim(r, " ")
+}
+
+func printHex(b []byte) {
+    for _,v := range b {
+        fmt.Printf("%02x ", v)
+    }
+}
+
 func GetHeader(src *[]byte) Header {
-    return Header{buf:src}
+	return Header{buf: src}
 }
 
 func (h *Header) CheckPackedContent() error {
@@ -79,19 +126,19 @@ func (h *Header) checkVersion() bool {
 }
 
 func (h *Header) setUnpackedSize(size uint64) {
-    b := make([]byte,8)
-    binary.LittleEndian.PutUint64(b, size)
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint64(b, size)
 	h.setArea(unpackedSizeOffset, b)
 }
 
 func (h *Header) setPackedSize() {
-    b := make([]byte,8)
-    binary.LittleEndian.PutUint64(b, uint64(len(*h.buf)-Length))
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint64(b, uint64(len(*h.buf)-Length))
 	h.setArea(packedSizeOffset, b)
 }
 
 func (h *Header) checkUnpackedSize(size uint64) bool {
-    toCheck := uint64(binary.LittleEndian.Uint64((*h.buf)[unpackedSizeOffset:unpackedSizeOffset+8]))
+	toCheck := uint64(binary.LittleEndian.Uint64((*h.buf)[unpackedSizeOffset : unpackedSizeOffset+8]))
 	return size == toCheck
 }
 
