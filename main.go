@@ -51,7 +51,7 @@ func main() {
 		if h, err := config.GetHeaderReader()(); err != nil {
 			printError(err)
 		} else {
-			header.Print(h)
+			header.Print(&h)
 		}
 	}
 	os.Exit(0)
