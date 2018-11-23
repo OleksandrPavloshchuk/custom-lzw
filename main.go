@@ -3,13 +3,15 @@ package main
 import (
 	"./config"
 	"./header"
-	"./huffman/static"
 	"./lzw"
 	"./version"
 	"fmt"
 	"os"
 )
 
+/**
+ * This construction is written in order to implement several stages of compressing in future
+ */
 func call(transforms []func(*[]byte) (*[]byte, error), doAddHeader bool) {
 	src, err := config.GetReader()()
 	if err == nil {
@@ -38,21 +40,25 @@ func printError(err error) {
 	os.Exit(2)
 }
 
+func printHeader() {
+    if h, err := config.GetHeaderReader()(); err != nil {
+		printError(err)
+	} else {
+		header.Print(&h)
+	}    
+}
+
 func main() {
 	config.Acquire()
 	switch config.GetMode() {
 	case config.Version:
 		version.Print()
 	case config.Archive:
-		call([]func(*[]byte) (*[]byte, error){lzw.Encode, static.Encode}, true)
+		call([]func(*[]byte) (*[]byte, error){lzw.Encode}, true)
 	case config.Extract:
-		call([]func(*[]byte) (*[]byte, error){static.Decode, lzw.Decode}, false)
+		call([]func(*[]byte) (*[]byte, error){lzw.Decode}, false)
 	case config.PrintHeader:
-		if h, err := config.GetHeaderReader()(); err != nil {
-			printError(err)
-		} else {
-			header.Print(&h)
-		}
+	    printHeader()
 	}
 	os.Exit(0)
 }

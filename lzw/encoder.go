@@ -40,5 +40,6 @@ func Encode(src *[]byte) (*[]byte, error) {
 	header.SetSignature()
 	header.SetVersion()
 	header.SetUnpackedInfo(src)
+	header.SetPackedInfo(&res)
 	return &res, nil
 }

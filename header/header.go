@@ -19,20 +19,15 @@ const (
 	packedSizeOffset           = 10
 	unpackedCrcOffset          = 14
 	packedCrcOffset            = 30
-	codeTableLengthOffset      = 46
 	
 	formatUnpackedSizeStart    = "- unpacked size:     %"
 	formatUnpackedSizeEnd      = "s\n"
 	
 	formatPackedSizeStart      = "- packed size:       %"
-	formatPackedSizeEnd        = "s (%.2f%s)\n"
-	
-	formatCodeTableLengthStart = "- code table length: %"
-	formatCodeTableLengthEnd   = "s\n"	 
-	
+	formatPackedSizeEnd        = "s (%.2f%s)\n"	
 )
 
-var header [50]byte
+var header [46]byte
 
 func GetLength() int {
 	return len(header)
@@ -75,16 +70,7 @@ func Print(h *[]byte) {
 	fmt.Printf("- unpacked CRC:      ")
 	printHex(unpackedCrcOffset, packedCrcOffset)
 	fmt.Printf("- packed CRC:        ")
-	printHex(packedCrcOffset, codeTableLengthOffset)
-	fmt.Printf(formatCodeTableLengthStart + fieldWidthStr + formatCodeTableLengthEnd, toString(GetCodeTableLength()))
-}
-
-func GetCodeTableLength() uint32 {
-    return toUint32(codeTableLengthOffset)
-}
-
-func SetCodeTableLength(length uint32) {
-    toBytes(length, codeTableLengthOffset)
+	printHex(packedCrcOffset, GetLength())
 }
 
 func CheckPackedContent(src *[]byte) error {
