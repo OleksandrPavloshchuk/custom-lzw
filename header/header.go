@@ -7,20 +7,29 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"strconv"
 )
 
 var signature = []byte{0xAA, 'r', 0xCC}
 
 const (
-	signatureOffset    = 0
-	versionOffset      = 3
-	unpackedSizeOffset = 6
-	packedSizeOffset   = 10
-	unpackedCrcOffset  = 14
-	packedCrcOffset    = 30
+	signatureOffset         = 0
+	versionOffset           = 3
+	unpackedSizeOffset      = 6
+	packedSizeOffset        = 10
+	unpackedCrcOffset       = 14
+	packedCrcOffset         = 30
+	codeTableLengthOffset   = 46
+	
+	formatUnpackedSizeStart = "- unpacked size: %"
+	formatUnpackedSizeEnd   = "s\n"
+	
+	formatPackedSizeStart   = "- packed size:   %"
+	formatPackedSizeEnd     = "s (%.2f%s)\n" 
+	
 )
 
-var header [46]byte
+var header [50]byte
 
 func GetLength() int {
 	return len(header)
@@ -56,10 +65,9 @@ func Print(h *[]byte) {
 	if len(packedSize) > fieldWidth {
 		fieldWidth = len(packedSize)
 	}
-	f := fmt.Sprintf("- unpacked size: %v%vs\n", "%", fieldWidth)
-	fmt.Printf(f, unpackedSize)
-	f = fmt.Sprintf("- packed size:   %s%vs (%s.2f%s)\n", "%", fieldWidth, "%", "%s")
-	fmt.Printf(f, packedSize, float32(np)/float32(nu)*100.0, "%")
+	fieldWidthStr := strconv.Itoa(fieldWidth)
+	fmt.Printf(formatUnpackedSizeStart + fieldWidthStr + formatUnpackedSizeEnd, unpackedSize)
+	fmt.Printf(formatPackedSizeStart + fieldWidthStr + formatPackedSizeEnd, packedSize, float32(np)/float32(nu)*100.0, "%" )
 
 	fmt.Printf("- unpacked CRC:  ")
 	printHex(unpackedCrcOffset, packedCrcOffset)
