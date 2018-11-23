@@ -3,7 +3,7 @@ package static
 type hItem struct {
 	free     bool
 	children [2]string
-	weight   uint64
+	weight   uint32
 	val      string
 }
 
@@ -35,9 +35,9 @@ func (h hTree) hasSingleFree() bool {
 	return r
 }
 
-func (h hTree) checkForTrivial() (map[byte]uint64, bool) {
+func (h hTree) checkForTrivial() (map[byte]uint32, bool) {
 	if len(h) <= 1 {
-		r := make(map[byte]uint64)
+		r := make(map[byte]uint32)
 		for k, _ := range h {
 			r[[]byte(k)[0]] = 0
 		}
@@ -91,19 +91,19 @@ func (h *hTree) buildTree() hItem {
 	return h.getLastFree()
 }
 
-func (h hTree) fillCodes(i hItem, code uint64, m *map[string]uint64) {
+func (h hTree) fillCodes(i hItem, code uint32, m *map[string]uint32) {
 	if len(i.val) == 1 {
 		(*m)[i.val] = code
 	} else {
 		for i, v := range i.children {
-			h.fillCodes(h[v], (code<<1)|uint64(i), m)
+			h.fillCodes(h[v], (code<<1)|uint32(i), m)
 		}
 	}
 }
 
-func Build(src []byte) hTree {
+func BuildHuffmanTree(src *[]byte) hTree {
 	r := make(map[string]hItem)
-	for _, b := range src {
+	for _, b := range *src {
 		key := string([]byte{b})
 		n, inMap := r[key]
 		if inMap {
@@ -116,14 +116,14 @@ func Build(src []byte) hTree {
 	return r
 }
 
-func (h *hTree) get1code(r *map[string]uint64) {
+func (h *hTree) get1code(r *map[string]uint32) {
 	for k, _ := range *h {
-		(*r)[k] = uint64(0)
+		(*r)[k] = uint32(0)
 	}
 }
 
-func (h *hTree) GetCodes() map[string]uint64 {
-	r := make(map[string]uint64)
+func (h *hTree) GetCodes() map[string]uint32 {
+	r := make(map[string]uint32)
 	switch len(*h) {
 	case 0:
 		return r
@@ -131,7 +131,7 @@ func (h *hTree) GetCodes() map[string]uint64 {
 		h.get1code(&r)
 	default:
 		hi := h.buildTree()
-		h.fillCodes(hi, uint64(0), &r)
+		h.fillCodes(hi, uint32(0), &r)
 	}
 	return r
 }

@@ -13,19 +13,22 @@ import (
 var signature = []byte{0xAA, 'r', 0xCC}
 
 const (
-	signatureOffset         = 0
-	versionOffset           = 3
-	unpackedSizeOffset      = 6
-	packedSizeOffset        = 10
-	unpackedCrcOffset       = 14
-	packedCrcOffset         = 30
-	codeTableLengthOffset   = 46
+	signatureOffset            = 0
+	versionOffset              = 3
+	unpackedSizeOffset         = 6
+	packedSizeOffset           = 10
+	unpackedCrcOffset          = 14
+	packedCrcOffset            = 30
+	codeTableLengthOffset      = 46
 	
-	formatUnpackedSizeStart = "- unpacked size: %"
-	formatUnpackedSizeEnd   = "s\n"
+	formatUnpackedSizeStart    = "- unpacked size:     %"
+	formatUnpackedSizeEnd      = "s\n"
 	
-	formatPackedSizeStart   = "- packed size:   %"
-	formatPackedSizeEnd     = "s (%.2f%s)\n" 
+	formatPackedSizeStart      = "- packed size:       %"
+	formatPackedSizeEnd        = "s (%.2f%s)\n"
+	
+	formatCodeTableLengthStart = "- code table length: %"
+	formatCodeTableLengthEnd   = "s\n"	 
 	
 )
 
@@ -52,9 +55,9 @@ func Print(h *[]byte) {
 	Fill(h)
 
 	fmt.Printf("Archive header:\n")
-	fmt.Printf("- signature:     ")
+	fmt.Printf("- signature:         ")
 	printHex(signatureOffset, versionOffset)
-	fmt.Printf("- version:       %v.%v.%v\n", header[3], header[4], header[5])
+	fmt.Printf("- version:           %v.%v.%v\n", header[3], header[4], header[5])
 
 	nu := toUint32(unpackedSizeOffset)
 	unpackedSize := toString(nu)
@@ -69,10 +72,19 @@ func Print(h *[]byte) {
 	fmt.Printf(formatUnpackedSizeStart + fieldWidthStr + formatUnpackedSizeEnd, unpackedSize)
 	fmt.Printf(formatPackedSizeStart + fieldWidthStr + formatPackedSizeEnd, packedSize, float32(np)/float32(nu)*100.0, "%" )
 
-	fmt.Printf("- unpacked CRC:  ")
+	fmt.Printf("- unpacked CRC:      ")
 	printHex(unpackedCrcOffset, packedCrcOffset)
-	fmt.Printf("- packed CRC:    ")
-	printHex(packedCrcOffset, len(header))
+	fmt.Printf("- packed CRC:        ")
+	printHex(packedCrcOffset, codeTableLengthOffset)
+	fmt.Printf(formatCodeTableLengthStart + fieldWidthStr + formatCodeTableLengthEnd, toString(GetCodeTableLength()))
+}
+
+func GetCodeTableLength() uint32 {
+    return toUint32(codeTableLengthOffset)
+}
+
+func SetCodeTableLength(length uint32) {
+    toBytes(length, codeTableLengthOffset)
 }
 
 func CheckPackedContent(src *[]byte) error {
@@ -187,7 +199,7 @@ func getLengthUint32(src *[]byte) uint32 {
 }
 
 func toString(n uint32) string {
-	src := []byte(fmt.Sprintf("%v", n))
+	src := []byte(strconv.FormatUint(uint64(n), 10))	
 	r := ""
 	for i := len(src) - 1; i >= 0; i-- {
 		r = string(src[i]) + r

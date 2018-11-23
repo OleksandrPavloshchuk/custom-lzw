@@ -3,6 +3,7 @@ package static
 import (
 	//    "../../codesIO"
 	"../../header"
+	"fmt"
 )
 
 // TODO replace it by static Huffman's encoding
@@ -20,8 +21,12 @@ func Decode(src *[]byte) (*[]byte, error) {
 	}
 	header.Fill(src)
 
-	content := (*src)[header.GetLength():]
-
+	contentOffset := header.GetLength() + int(header.GetCodeTableLength())
+	
+	fmt.Printf("TRACE content offset = %v\n", contentOffset)
+	
+	content := 	(*src)[contentOffset:]
+	
 	if err := header.CheckPackedContent(&content); err != nil {
 		return nil, err
 	}
