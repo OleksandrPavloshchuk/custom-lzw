@@ -28,7 +28,7 @@ func call(transforms []func(*[]byte) (*[]byte, error), doAddHeader bool) {
 			}
 			err = config.GetWriter()(*res)
 			if err == nil {
-				os.Exit(0)
+			    return
 			}
 		}
 	}
