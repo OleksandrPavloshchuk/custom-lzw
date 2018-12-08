@@ -8,6 +8,7 @@ const IncrementCodeSize = 0
 
 type dictionary struct {
 	data     [][]byte
+    weight []uint64
 	index    map[string]uint
 	codeSize uint
 }
@@ -29,14 +30,18 @@ func (this *dictionary) getCodeSize() uint {
 func (this *dictionary) put(s []byte) {
 	this.data = append(this.data, s)
 	this.index[string(s)] = uint(len(this.data))
+    this.weight = append(this.weight, 0)
 }
 
 func (this *dictionary) getString(i uint) []byte {
+    this.weight[i-1]++
 	return this.data[i-1]
 }
 
 func (this *dictionary) getIndex(a []byte) uint {
-	return this.index[string(a)]
+    r := this.index[string(a)]
+    this.weight[r-1]++
+    return r
 }
 
 func (this *dictionary) incrementCodeSizeWhileDecode(code uint) bool {
@@ -69,9 +74,11 @@ func (this *dictionary) PrintStatistics() {
 	fmt.Printf("\tcode size: %v\n", this.codeSize)	
 	fmt.Printf("\tdictionary size: %v\n", len(this.data))
 	fmt.Printf("\tdictionary\n",)
-	fmt.Printf("\t\tindex\tvalue\n",)
-	fmt.Printf("\t\t-----\t-----\n",)
+	fmt.Printf("\t\tindex\tweight\tvalue\n",)
+	fmt.Printf("\t\t-----\t------\t-----\n",)
    for i, v := range this.data {
-		fmt.Printf("\t\t%5d\t%v\n",  i, v)
+        w := this.weight[i]
+		fmt.Printf("\t\t%5d\t%6d\t%v\n",  i, w, v)
    }
+	fmt.Printf("\n",)
 }
