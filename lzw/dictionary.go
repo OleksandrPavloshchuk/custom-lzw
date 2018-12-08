@@ -1,5 +1,9 @@
 package lzw
 
+import  (
+	"fmt"
+)
+
 const IncrementCodeSize = 0
 
 type dictionary struct {
@@ -58,4 +62,16 @@ func (this *dictionary) incrementCodeSizeWhenCondition(condition bool) bool {
 		return true
 	}
 	return false
+}
+
+func (this *dictionary) PrintStatistics() {
+	fmt.Printf("Archive statistics:\n")	
+	fmt.Printf("\tcode size: %v\n", this.codeSize)	
+	fmt.Printf("\tdictionary size: %v\n", len(this.data))
+	fmt.Printf("\tdictionary\n",)
+	fmt.Printf("\t\tindex\tvalue\n",)
+	fmt.Printf("\t\t-----\t-----\n",)
+   for i, v := range this.data {
+		fmt.Printf("\t\t%5d\t%v\n",  i, v)
+   }
 }

@@ -3,6 +3,7 @@ package lzw
 import (
 	"../codesIO"
 	"../header"
+    "../config"
 )
 
 func decode(cr codesIO.Reader) []byte {
@@ -29,6 +30,9 @@ func decode(cr codesIO.Reader) []byte {
 		}
 	}
 	result = append(result, buf...)
+    if config.IsStatistics() {
+		dict.PrintStatistics()	
+    }
 	return result
 }
 

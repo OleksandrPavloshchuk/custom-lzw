@@ -3,6 +3,7 @@ package lzw
 import (
 	"../codesIO"
 	"../header"
+    "../config"
 )
 
 func encode(src *[]byte, cw *codesIO.Writer) {
@@ -24,6 +25,9 @@ func encode(src *[]byte, cw *codesIO.Writer) {
 		buf = append(buf, b)
 	}
 	emit(buf, dict, cw)
+    if config.IsStatistics() {
+    	dict.PrintStatistics()
+    }
 }
 
 func emit(s []byte, dict dictionary, cw *codesIO.Writer) {

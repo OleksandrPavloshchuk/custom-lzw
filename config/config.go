@@ -25,6 +25,7 @@ var (
 	isArchive     *bool
 	isExtract     *bool
 	isPrintHeader *bool
+    isStatistics *bool
 )
 
 func GetReader() func() ([]byte, error) {
@@ -90,6 +91,10 @@ func GetMode() Mode {
 	}
 }
 
+func IsStatistics() bool {
+	return *isStatistics
+}
+
 func Usage() {
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 	flag.PrintDefaults()
@@ -103,6 +108,7 @@ func Acquire() {
 	isPrintHeader = flag.Bool("printHeader", false, "print header of archive")
 	inputFile = flag.String("in", "", "input file name")
 	outputFile = flag.String("out", "", "output file name")
+    isStatistics = flag.Bool("stat", false, "print encoding/decoding statistics")
 	flag.Parse()
 	if !flag.Parsed() {
 		Usage()
