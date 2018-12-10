@@ -17,7 +17,7 @@ func encode(src *[]byte, cw *codesIO.Writer) {
 			emit(buf, dict, cw)
 			dict.put(test)
 			if dict.incrementCodeSizeWhileEncode() {
-				cw.Accept(IncrementCodeSize, dict.getCodeSize() + codesIO.CodeHeadLength - 1 )
+				cw.Accept(IncrementCodeSize, codesIO.CodeHeadLength)
 			}
 			buf = make([]byte, 0)
 		}
@@ -28,7 +28,12 @@ func encode(src *[]byte, cw *codesIO.Writer) {
 
 func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
 
-    code := dict.getIndex(s) << codesIO.CodeHeadLength
+    code := dict.getIndex(s) 
+    // TODO determine code size
+    
+    code <<= codesIO.CodeHeadLength
+    code++
+    
     codeSize := dict.getCodeSize() + codesIO.CodeHeadLength
 
 	cw.Accept(code, codeSize)

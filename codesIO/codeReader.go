@@ -21,7 +21,7 @@ func (cr *Reader) Get(codeLength uint) uint {
 	return r
 }
 
-func AcquireCodes(src *[]byte) Reader {
+func AcquireCodes(src *[]byte) *Reader {
 	cr := Reader{}
 	counter := uint(0)
 	for _, b := range *src {
@@ -34,5 +34,5 @@ func AcquireCodes(src *[]byte) Reader {
 			d <<= 1
 		}
 	}
-	return cr
+	return &cr
 }

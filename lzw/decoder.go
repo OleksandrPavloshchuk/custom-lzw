@@ -5,19 +5,15 @@ import (
 	"../header"
 )
 
-func decode(cr codesIO.Reader) []byte {
+func decode(cr *codesIO.Reader) []byte {
 	dict := createDictionary()
 	result := make([]byte, 0)
 	buf := make([]byte, 0)
 	for cr.HasCodes() {
-		i := cr.Get(dict.getCodeSize() + codesIO.CodeHeadLength)
-		
-		// TODO: check code head
-		
-		i >>= codesIO.CodeHeadLength
-		
-		if !dict.incrementCodeSizeWhileDecode(i) {
+    	codeHead := cr.Get(codesIO.CodeHeadLength)		
+		if !dict.incrementCodeSizeWhileDecode(codeHead) {		
 			var s []byte
+		    i := cr.Get(dict.getCodeSize())
 			if dict.hasCode(i) {
 				s = dict.getString(i)
 			} else {
@@ -47,6 +43,7 @@ func Decode(src *[]byte) (*[]byte, error) {
 		return nil, err
 	}
 	res := decode(codesIO.AcquireCodes(&content))
+	
 	if err := header.CheckUnpackedContent(&res); err != nil {
 		return nil, err
 	}
