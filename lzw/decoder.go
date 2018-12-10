@@ -10,7 +10,12 @@ func decode(cr codesIO.Reader) []byte {
 	result := make([]byte, 0)
 	buf := make([]byte, 0)
 	for cr.HasCodes() {
-		i := cr.Get(dict.getCodeSize())
+		i := cr.Get(dict.getCodeSize() + codesIO.CodeHeadLength)
+		
+		// TODO: check code head
+		
+		i >>= codesIO.CodeHeadLength
+		
 		if !dict.incrementCodeSizeWhileDecode(i) {
 			var s []byte
 			if dict.hasCode(i) {
