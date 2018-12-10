@@ -11,9 +11,13 @@ func decode(cr *codesIO.Reader) []byte {
 	buf := make([]byte, 0)
 	for cr.HasCodes() {
     	codeHead := cr.Get(codesIO.CodeHeadLength)		
-		if !dict.incrementCodeSizeWhileDecode(codeHead) {		
+		if !dict.incrementCodeSizeWhileDecode(codeHead) {
+		    codeSize := dict.getCodeSize()
+		    if codeHead==1 {
+		        codeSize = 8
+		    }
 			var s []byte
-		    i := cr.Get(dict.getCodeSize())
+		    i := cr.Get(codeSize)
 			if dict.hasCode(i) {
 				s = dict.getString(i)
 			} else {
