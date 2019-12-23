@@ -27,18 +27,18 @@ func encode(src *[]byte, cw *codesIO.Writer) {
 }
 
 func emit(s []byte, dict dictionary, cw *codesIO.Writer) {
-    code := dict.getIndex(s) 
-    
-    codeSize := dict.getCodeSize()
-    codeHead := uint(2)
-    if code<=255 {
-        codeHead = 1
-        codeSize = 8   
-    }    
-    code <<= codesIO.CodeHeadLength
-    code += codeHead
-    
-    codeSize += codesIO.CodeHeadLength
+	code := dict.getIndex(s)
+
+  codeSize := dict.getCodeSize()
+  codeHead := uint(2)
+  if code<=255 {
+  	codeHead = 1
+    codeSize = 8
+  }
+  code <<= codesIO.CodeHeadLength
+  code += codeHead
+
+  codeSize += codesIO.CodeHeadLength
 
 	cw.Accept(code, codeSize)
 }

@@ -10,14 +10,14 @@ func decode(cr *codesIO.Reader) []byte {
 	result := make([]byte, 0)
 	buf := make([]byte, 0)
 	for cr.HasCodes() {
-    	codeHead := cr.Get(codesIO.CodeHeadLength)		
+  	codeHead := cr.Get(codesIO.CodeHeadLength)
 		if !dict.incrementCodeSizeWhileDecode(codeHead) {
-		    codeSize := dict.getCodeSize()
-		    if codeHead==1 {
-		        codeSize = 8
-		    }
+			codeSize := dict.getCodeSize()
+		  if codeHead==1 {
+		  	codeSize = 8
+		  }
 			var s []byte
-		    i := cr.Get(codeSize)
+		  i := cr.Get(codeSize)
 			if dict.hasCode(i) {
 				s = dict.getString(i)
 			} else {
@@ -47,7 +47,7 @@ func Decode(src *[]byte) (*[]byte, error) {
 		return nil, err
 	}
 	res := decode(codesIO.AcquireCodes(&content))
-	
+
 	if err := header.CheckUnpackedContent(&res); err != nil {
 		return nil, err
 	}

@@ -24,10 +24,10 @@ func (this *bitSet) set(i uint) {
 }
 
 func (this *bitSet) isSet(i uint) bool {
-    s := i/size
-    if s >= uint(len(this.words)) {
-        return false
-    }
+  s := i/size
+  if s >= uint(len(this.words)) {
+  	return false
+  }
 	return this.words[s]&(1<<(i%size)) != 0
 }
 

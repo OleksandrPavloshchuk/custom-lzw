@@ -28,7 +28,7 @@ func call(transforms []func(*[]byte) (*[]byte, error), doAddHeader bool) {
 			}
 			err = config.GetWriter()(*res)
 			if err == nil {
-			    return
+				return
 			}
 		}
 	}
@@ -45,7 +45,7 @@ func printHeader() {
 		printError(err)
 	} else {
 		header.Print(&h)
-	}    
+	}
 }
 
 func main() {
@@ -58,7 +58,7 @@ func main() {
 	case config.Extract:
 		call([]func(*[]byte) (*[]byte, error){lzw.Decode}, false)
 	case config.PrintHeader:
-	    printHeader()
+	  printHeader()
 	}
 	os.Exit(0)
 }
